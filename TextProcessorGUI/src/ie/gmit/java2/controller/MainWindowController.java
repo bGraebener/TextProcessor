@@ -2,6 +2,8 @@ package ie.gmit.java2.controller;
 
 import java.io.File;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import ie.gmit.java2.model.Handler;
 import ie.gmit.java2.model.Parser.Source;
@@ -118,9 +120,12 @@ public class MainWindowController {
 	 * provided and passes it to the Handler getStats() method.
 	 * 
 	 * @param event
+	 * @throws TimeoutException 
+	 * @throws ExecutionException 
+	 * @throws InterruptedException 
 	 */
 	@FXML
-	private void search(ActionEvent event) {
+	private void search(ActionEvent event) throws InterruptedException, ExecutionException, TimeoutException {
 
 		if (searchTextField.getText().isEmpty()) {
 			alert.setContentText("No search string specified!");

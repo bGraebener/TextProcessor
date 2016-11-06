@@ -17,6 +17,10 @@ public class ProcessorTest {
 
 	private TextProcessor proc;
 	private List<String> text;
+	
+	private BiPredicate<String, String> start = String::startsWith;
+	private BiPredicate<String, String> ends = String::endsWith;
+	private BiPredicate<String, String> combined = start.or(ends);
 
 	@Before
 	public void setUp() throws Exception {
@@ -75,11 +79,7 @@ public class ProcessorTest {
 	}
 
 	@Test
-	public void deleteObjectTest() {
-		BiPredicate<String, String> start = String::startsWith;
-		BiPredicate<String, String> ends = String::endsWith;
-		BiPredicate<String, String> combined = start.or(ends);
-		
+	public void deleteObjectTest() {		
 		int deletedExpected = 2;
 		int deletedActual = proc.delete("s", combined);
 		int expectedSize = 8;
@@ -87,6 +87,14 @@ public class ProcessorTest {
 		
 		assertTrue("Wrong amount of elements deleted", deletedExpected == deletedActual);
 		assertTrue("Wrong list size: " + proc.count(), expectedSize == actualSize);
+	}
+	
+	@Test
+	public void mostUsedWordIgnoreCase(){
+		String mostExpected = "the";
+		String mostActual = proc.getMostUsedWord(String::equalsIgnoreCase);
+		
+		assertTrue("Wrong word found", mostActual.equalsIgnoreCase(mostExpected));
 	}
 
 }

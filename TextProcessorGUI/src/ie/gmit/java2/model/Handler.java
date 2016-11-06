@@ -7,6 +7,7 @@ package ie.gmit.java2.model;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.*;
 import java.util.function.BiPredicate;
 
 import ie.gmit.java2.controller.MainWindowController;
@@ -87,8 +88,11 @@ public class Handler {
 	 * @param userInput
 	 *            The search String specified by the user.
 	 * @return The result as a formatted String.
+	 * @throws TimeoutException 
+	 * @throws ExecutionException 
+	 * @throws InterruptedException 
 	 */
-	public String getStats(String userInput) {
+	public String getStats(String userInput) throws InterruptedException, ExecutionException, TimeoutException {
 
 		setOptions();
 
@@ -102,6 +106,8 @@ public class Handler {
 		int lastIndexOf = processor.getLastIndex(userInput, combined);
 		int occurencesCount = processor.countOccurences(userInput, combined);
 		int[] occurencesIndices = processor.getAllIndeces(userInput, combined);
+		
+//		String mostUsed = processor.getMostUsedWord(combined);
 
 		statsAsString.append("UserInput: " + userInput + "\n");
 		statsAsString.append("Contains input: " + containsUserInput + "\n");
@@ -110,14 +116,9 @@ public class Handler {
 		statsAsString.append("Last Index: " + lastIndexOf + "\n");
 		statsAsString.append("Indices of occurences: " + Arrays.toString(occurencesIndices) + "\n");
 		statsAsString.append("Total amount of elements: " + elementsCount + "\n\n");
-		
-		
-//		result = String.format("%s%25b%15d%15d%-10d%-10d\n", userInput, containsUserInput, firstIndexOf,
-//				lastIndexOf, occurencesCount, elementsCount);		
-//		statsAsString.append(result);
+//		statsAsString.append("Most used word: " + mostUsed2.get() + "\n\n");
 
 		return statsAsString.toString();
-
 	}
 
 	/**

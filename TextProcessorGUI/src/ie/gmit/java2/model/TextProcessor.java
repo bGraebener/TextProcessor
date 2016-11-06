@@ -6,9 +6,11 @@ package ie.gmit.java2.model;
 
 import java.util.List;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 //XXX delete case sensitive
 //XXX delete startsWith/endsWith
+//TODO method to find out the most used word
 
 /**
  * Class to process the text gathered by the Parser. Pass an instance of the
@@ -32,8 +34,8 @@ public class TextProcessor {
 	 * @param s
 	 *            String to check for
 	 * @param biPred
-	 *            BiPredicate to set whether to search case sensitive or
-	 *            to use startsWith/endWith
+	 *            BiPredicate to set whether to search case sensitive or to use
+	 *            startsWith/endWith
 	 * @return whether the text contains the String
 	 */
 	public boolean contains(String s, BiPredicate<String, String> biPred) {
@@ -55,8 +57,8 @@ public class TextProcessor {
 	 * @param s
 	 *            String to check for
 	 * @param pred
-	 *            BiPredicate to set whether to search case sensitive or
-	 *            to use startsWith/endWith
+	 *            BiPredicate to set whether to search case sensitive or to use
+	 *            startsWith/endWith
 	 * @return the number of occurrences of String s
 	 */
 	public int countOccurences(String s, BiPredicate<String, String> biPred) {
@@ -110,8 +112,8 @@ public class TextProcessor {
 	 * @param s
 	 *            String to search for in text
 	 * @param biPred
-	 *            BiPredicate to set whether to search case sensitive or
-	 *            to use startsWith/endWith
+	 *            BiPredicate to set whether to search case sensitive or to use
+	 *            startsWith/endWith
 	 * @return int array of indices of all occurrences of s in text or null if
 	 *         no occurrences found
 	 */
@@ -132,6 +134,34 @@ public class TextProcessor {
 			}
 		}
 		return allIndeces;
+	}
+
+	
+	/**
+	 * Method that searches for the word with the highest frequency in a text.
+	 * Not suitable for large texts, since the order of magnitude is very high (O)n³!!!!
+	 * @param biPred BiPredicate to choose whether to ignore case or not
+	 * @return The word with the highest frequency
+	 */
+	public String getMostUsedWord(BiPredicate<String, String> biPred) {
+
+		int highestIndex = -1;
+		int highest = 0;
+		
+		List<String> distinct = text.stream().filter((x) -> countOccurences(x, biPred) > 1).distinct()
+				.collect(Collectors.toList());
+
+		distinct.forEach(System.out::println);
+		
+		List<Integer> occurenceList = text.stream().map((x) -> countOccurences(x, biPred)).collect(Collectors.toList());
+
+		for (int i = 0; i < occurenceList.size(); i++) {
+			if (occurenceList.get(i) > highest) {
+				highest = occurenceList.get(i);
+				highestIndex = i;
+			}
+		}
+		return distinct.get(highestIndex);
 	}
 
 	/**
@@ -158,16 +188,16 @@ public class TextProcessor {
 	 *            to use startsWith/endWith
 	 * @return Amount of elements deleted
 	 */
-	public int delete(String string, BiPredicate<String, String> biPred) {	
+	public int delete(String string, BiPredicate<String, String> biPred) {
 		int deleted = 0;
-		
+
 		for (int i = 0; i < text.size(); i++) {
-			if(biPred.test(text.get(i), string)){
+			if (biPred.test(text.get(i), string)) {
 				text.remove(i);
 				i--;
-				deleted++; 
+				deleted++;
 			}
-		}		
+		}
 		return deleted;
 	}
 
