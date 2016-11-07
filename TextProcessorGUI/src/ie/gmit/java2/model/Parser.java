@@ -9,6 +9,10 @@ import java.net.URL;
 import java.util.*;
 
 //DONE Javadocs for classes
+//TODO validate input
+//TODO use BufferedReader instead of Scanner
+//TODO make interface for Parser?
+
 
 /**
  * Class to parse text from a source. Call the static getText() method and

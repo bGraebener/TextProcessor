@@ -7,7 +7,6 @@ package ie.gmit.java2.model;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.*;
 import java.util.function.BiPredicate;
 
 import ie.gmit.java2.controller.MainWindowController;
@@ -35,18 +34,18 @@ public class Handler {
 	private MainWindowController mwc;
 	private StringBuilder statsAsString;
 	private TextProcessor processor;
-	
+
 	private Alert alert;
 
 	public Handler(MainWindowController mwc) {
 		this.mwc = mwc;
-		statsAsString = new StringBuilder(
-				"UserInput\t\t\tcontains\t\t\tfirst index\t\t\tlast index\t\t\tocc. count\t# elements\n");
+//		statsAsString = new StringBuilder(
+//				"UserInput\t\t\tcontains\t\t\tfirst index\t\t\tlast index\t\t\tocc. count\t# elements\n");
 		statsAsString = new StringBuilder();
 
 		startsWith = String::startsWith;
 		endsWith = String::endsWith;
-		
+
 		alert = new Alert(AlertType.INFORMATION);
 		alert.setHeaderText(null);
 
@@ -63,7 +62,7 @@ public class Handler {
 	 *            the type of the source
 	 */
 	public void parse(String sourcePath, Source sourceType) {
-	
+
 		switch (sourceType) {
 		case FILE:
 			text = Parser.getText(sourcePath, Source.FILE);
@@ -75,10 +74,10 @@ public class Handler {
 		default:
 			throw new IllegalArgumentException("Invalid source");
 		}
-	
+
 		alert.setContentText("Text parsed!");
 		alert.show();
-	
+
 	}
 
 	/**
@@ -88,11 +87,8 @@ public class Handler {
 	 * @param userInput
 	 *            The search String specified by the user.
 	 * @return The result as a formatted String.
-	 * @throws TimeoutException 
-	 * @throws ExecutionException 
-	 * @throws InterruptedException 
 	 */
-	public String getStats(String userInput) throws InterruptedException, ExecutionException, TimeoutException {
+	public String getStats(String userInput) {
 
 		setOptions();
 
@@ -106,8 +102,8 @@ public class Handler {
 		int lastIndexOf = processor.getLastIndex(userInput, combined);
 		int occurencesCount = processor.countOccurences(userInput, combined);
 		int[] occurencesIndices = processor.getAllIndeces(userInput, combined);
-		
-//		String mostUsed = processor.getMostUsedWord(combined);
+
+		// String mostUsed = processor.getMostUsedWord(combined);
 
 		statsAsString.append("UserInput: " + userInput + "\n");
 		statsAsString.append("Contains input: " + containsUserInput + "\n");
@@ -116,7 +112,7 @@ public class Handler {
 		statsAsString.append("Last Index: " + lastIndexOf + "\n");
 		statsAsString.append("Indices of occurences: " + Arrays.toString(occurencesIndices) + "\n");
 		statsAsString.append("Total amount of elements: " + elementsCount + "\n\n");
-//		statsAsString.append("Most used word: " + mostUsed2.get() + "\n\n");
+		// statsAsString.append("Most used word: " + mostUsed2.get() + "\n\n");
 
 		return statsAsString.toString();
 	}
@@ -139,6 +135,7 @@ public class Handler {
 
 		setOptions();
 
+		// check if input is an integer
 		for (int i = 0; i < userInput.length(); i++) {
 			if (Character.isDigit(userInput.charAt(i))) {
 				isInt = true;
@@ -147,31 +144,34 @@ public class Handler {
 			}
 		}
 
+		// call appropriate delete method
 		if (isInt) {
 			index = Integer.parseInt(userInput);
 			deletedString = processor.delete(index);
-			
+
 			alert.setContentText("Deleted Item: " + deletedString);
 			alert.show();
-			
+
 		} else {
 			deletedCount = processor.delete(userInput, combined);
 			alert.setContentText("Number of deleted elements: " + deletedCount);
 			alert.show();
-		}		
+		}
 	}
 
 	/**
-	 * Method that opens the Text View Window. Sets the text with the
-	 * TextControllers setText() method.
+	 * Method that opens the Text View Window. Gets called from the
+	 * MainWindowController. Sets the text with the TextControllers setText()
+	 * method.
 	 */
 	public void showText() {
 
-		if(text == null || text.isEmpty()){
+		if (text == null || text.isEmpty()) {
 			return;
 		}
 		processor = new TextProcessor(text);
 
+		// open the TextView Window
 		try {
 			FXMLLoader textViewLoader = new FXMLLoader(getClass().getResource("/ie/gmit/java2/view/TextView.fxml"));
 			AnchorPane textViewPane = textViewLoader.load();
@@ -200,7 +200,7 @@ public class Handler {
 	public String clearText() {
 		statsAsString = new StringBuilder();
 		return statsAsString.toString();
-		
+
 	}
 
 	/**
@@ -209,17 +209,17 @@ public class Handler {
 	 * options are disabled.
 	 */
 	private void setOptions() {
-	
+
 		caseSensitive = mwc.caseIsSelected() ? String::equals : String::equalsIgnoreCase;
-	
+
 		if (mwc.startsIsSelected()) {
 			combined = startsWith;
 			if (mwc.endsIsSelected()) {
 				combined = combined.or(endsWith);
-			}	
+			}
 		} else if (mwc.endsIsSelected()) {
-			combined = endsWith;	
-		} else {	
+			combined = endsWith;
+		} else {
 			combined = caseSensitive;
 		}
 	}
