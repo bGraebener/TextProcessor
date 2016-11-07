@@ -7,16 +7,20 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 import java.util.function.BiPredicate;
 
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Test;
 
-import ie.gmit.java2.model.Parser;
-import ie.gmit.java2.model.Parser.Source;
 import ie.gmit.java2.model.TextProcessor;
+import ie.gmit.java2.model.parsing.FileParser;
+import ie.gmit.java2.model.parsing.UrlParser;
 
 public class ProcessorTest {
 
 	private TextProcessor proc;
 	private List<String> text;
+	
+	private FileParser fileParser;
+	private UrlParser urlParser;
 	
 	private BiPredicate<String, String> start = String::startsWith;
 	private BiPredicate<String, String> ends = String::endsWith;
@@ -24,8 +28,11 @@ public class ProcessorTest {
 
 	@Before
 	public void setUp() throws Exception {
-		text = Parser.getText("res/test.txt", Source.FILE);
-		// text = Parser.getText("https://www.gutenberg.org/files/2701/2701.txt", Source.URL);
+		fileParser = new FileParser("res/test.txt");
+		text = fileParser.parse();
+		
+//		urlParser = new UrlParser("https://www.gutenberg.org/files/2701/2701.txt");
+//		text = urlParser.parse();
 		proc = new TextProcessor(text);
 	}
 
@@ -92,9 +99,37 @@ public class ProcessorTest {
 	@Test
 	public void mostUsedWordIgnoreCase(){
 		String mostExpected = "the";
-		String mostActual = proc.getMostUsedWord(String::equalsIgnoreCase);
-		
+		String mostActual = proc.getMostUsedWord();		
 		assertTrue("Wrong word found", mostActual.equalsIgnoreCase(mostExpected));
 	}
+	
+	@Test
+	public void averageLengthTest(){
+		double expected = 4.2;
+		double actual = proc.averageWordLength();
+		assertTrue("Wrong eaverage", expected == actual);
+	}
+	
+	@Test
+	public void longestWordTest(){
+		int expected = 6;
+		int actual = proc.longestWord();
+		assertTrue("Wrong length found", expected == actual);
+	}
+	
+	@Test
+	public void shortestWordTest(){
+		int expected = 2;
+		int actual = proc.shortestWord();
+		assertTrue("Wrong length found", expected == actual);
+	}
 
+	@Test
+	public void countSentencesTest(){
+		int expected = 1;
+		int actual = proc.countSentences();
+		assertTrue("Wrong length found", expected == actual);
+	}
+	
+	
 }

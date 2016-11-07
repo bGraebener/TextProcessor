@@ -6,7 +6,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import ie.gmit.java2.model.Handler;
-import ie.gmit.java2.model.Parser.Source;
+import ie.gmit.java2.model.Handler.Source;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -87,7 +87,7 @@ public class MainWindowController {
 		FileChooser fc = new FileChooser();
 		Optional<File> chosenOptional = Optional.ofNullable(fc.showOpenDialog(null));
 
-		File chosenFile = chosenOptional.orElse(new File("res/test.txt"));
+		File chosenFile = chosenOptional.orElse(new File("res/Moby Dick.txt"));
 
 		fileTextField.setText(chosenFile.getAbsolutePath());
 	}
@@ -125,7 +125,7 @@ public class MainWindowController {
 	 * @throws InterruptedException 
 	 */
 	@FXML
-	private void search(ActionEvent event) throws InterruptedException, ExecutionException, TimeoutException {
+	private void search(ActionEvent event) {
 
 		if (searchTextField.getText().isEmpty()) {
 			alert.setContentText("No search string specified!");
@@ -134,11 +134,19 @@ public class MainWindowController {
 		}
 
 		String userInput = searchTextField.getText();
-		String statsResults = handler.getStats(userInput);
+		String statsResults = handler.searchForString(userInput);
 
 		textArea.setText(statsResults);
 	}
 
+	@FXML
+	private void showStats(){
+		
+		String stats = handler.getStats();
+		textArea.setText(stats);
+		
+	}
+	
 	/**
 	 * Event handler for the Delete button. Checks whether a delete string was
 	 * provided and passes it to the Handler delete() method.

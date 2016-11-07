@@ -4,17 +4,35 @@
 
 package ie.gmit.java2.junit;
 
-import org.junit.Test;
+import org.junit.*;
 
-import ie.gmit.java2.model.Parser;
-import ie.gmit.java2.model.Parser.Source;
+import ie.gmit.java2.model.parsing.FileParser;
+import ie.gmit.java2.model.parsing.UrlParser;
 
 public class ParserTestClass {
 
+	private FileParser fileParser;
+	private UrlParser urlParser;
+
+	@Ignore
+	@Before
+	public void setUp() {
+		fileParser = new FileParser("res/test.txt");
+		urlParser = new UrlParser("res/test.txt");
+	}
+	
+	@Ignore
 	@Test(expected = IllegalArgumentException.class)
 	public void getTextTest() {
-		Parser.getText(null, Source.FILE);
-		Parser.getText(null, Source.URL);
+		fileParser.parse();
+		urlParser.parse();
+	}
+	
+	
+	@Test(expected = UnsupportedOperationException.class)
+	public void testList() {
+		fileParser = new FileParser("res/test.txt");
+		fileParser.parse();
 	}
 
 }

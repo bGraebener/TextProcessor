@@ -11,7 +11,8 @@ import java.util.function.BiPredicate;
 
 import ie.gmit.java2.controller.MainWindowController;
 import ie.gmit.java2.controller.TextViewController;
-import ie.gmit.java2.model.Parser.Source;
+import ie.gmit.java2.model.parsing.FileParser;
+import ie.gmit.java2.model.parsing.UrlParser;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -19,6 +20,8 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+//TODO implement stats method 
 
 /**
  * Class that retrieves the results from the users query and passes it back to
@@ -28,6 +31,10 @@ import javafx.stage.Stage;
  *
  */
 public class Handler {
+
+	public static enum Source {
+		URL, FILE, OTHER
+	};
 
 	private List<String> text;
 	private BiPredicate<String, String> caseSensitive, startsWith, endsWith, combined;
@@ -39,8 +46,9 @@ public class Handler {
 
 	public Handler(MainWindowController mwc) {
 		this.mwc = mwc;
-//		statsAsString = new StringBuilder(
-//				"UserInput\t\t\tcontains\t\t\tfirst index\t\t\tlast index\t\t\tocc. count\t# elements\n");
+		// statsAsString = new StringBuilder(
+		// "UserInput\t\t\tcontains\t\t\tfirst index\t\t\tlast index\t\t\tocc.
+		// count\t# elements\n");
 		statsAsString = new StringBuilder();
 
 		startsWith = String::startsWith;
@@ -53,8 +61,8 @@ public class Handler {
 
 	/**
 	 * Method that attempts to parse the text from the specified source by
-	 * calling the appropriate method from the Parser class. Gets called by the
-	 * parse event handler of the Controller.
+	 * calling the appropriate method from the FileParser class. Gets called by
+	 * the parse event handler of the Controller.
 	 * 
 	 * @param sourcePath
 	 *            the path of the text source
@@ -65,10 +73,12 @@ public class Handler {
 
 		switch (sourceType) {
 		case FILE:
-			text = Parser.getText(sourcePath, Source.FILE);
+			FileParser fileParser = new FileParser(sourcePath);
+			text = fileParser.parse();
 			break;
 		case URL:
-			text = Parser.getText(sourcePath, Source.URL);
+			UrlParser urlParser = new UrlParser(sourcePath);
+			text = urlParser.parse();
 			break;
 		case OTHER:
 		default:
@@ -88,7 +98,7 @@ public class Handler {
 	 *            The search String specified by the user.
 	 * @return The result as a formatted String.
 	 */
-	public String getStats(String userInput) {
+	public String searchForString(String userInput) {
 
 		setOptions();
 
@@ -96,23 +106,45 @@ public class Handler {
 			processor = new TextProcessor(text);
 		}
 
-		int elementsCount = processor.count();
 		boolean containsUserInput = processor.contains(userInput, combined);
 		int firstIndexOf = processor.getFirstIndex(userInput, combined);
 		int lastIndexOf = processor.getLastIndex(userInput, combined);
 		int occurencesCount = processor.countOccurences(userInput, combined);
 		int[] occurencesIndices = processor.getAllIndeces(userInput, combined);
 
-		// String mostUsed = processor.getMostUsedWord(combined);
-
-		statsAsString.append("UserInput: " + userInput + "\n");
-		statsAsString.append("Contains input: " + containsUserInput + "\n");
+		statsAsString.append("\nUser Input: " + userInput + "\n");
+		statsAsString.append("Contains Input: " + containsUserInput + "\n");
 		statsAsString.append("Num of Occurences: " + occurencesCount + "\n");
 		statsAsString.append("First Index: " + firstIndexOf + "\n");
 		statsAsString.append("Last Index: " + lastIndexOf + "\n");
 		statsAsString.append("Indices of occurences: " + Arrays.toString(occurencesIndices) + "\n");
-		statsAsString.append("Total amount of elements: " + elementsCount + "\n\n");
-		// statsAsString.append("Most used word: " + mostUsed2.get() + "\n\n");
+
+		return statsAsString.toString();
+	}
+
+	public String getStats() {
+		
+		if (!text.isEmpty()) {
+			processor = new TextProcessor(text);
+		}
+
+		int elementsCount = processor.count();
+		String mostUsed = processor.getMostUsedWord();
+		int longestWord = processor.longestWord();
+		List<String> longestWords = processor.findWordsOfLength(longestWord);
+		int shortestWord = processor.shortestWord();
+		double averageWordLength = processor.averageWordLength();
+		int numOfSentences = processor.countSentences();
+		int mostUsedAmount = processor.countOccurences(mostUsed, String::equalsIgnoreCase);
+
+		statsAsString.append("\nLongest word has " + longestWord + " characters\n");
+		statsAsString.append("\nLongest word is " + longestWords.get(0) + " characters\n");
+		statsAsString.append("Shortest word has " + shortestWord + " characters\n");
+		statsAsString.append("Average word length is: " + averageWordLength+ "\n");
+		statsAsString.append("Number of sentences: " + numOfSentences+ "\n");
+		statsAsString.append("Total amount of elements: " + elementsCount + "\n");
+		statsAsString.append("Most used word: " + mostUsed + "\n");
+		statsAsString.append("Most used word frequency: " + mostUsedAmount + "\n\n");
 
 		return statsAsString.toString();
 	}

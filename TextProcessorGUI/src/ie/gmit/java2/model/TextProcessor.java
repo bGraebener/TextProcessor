@@ -10,10 +10,11 @@ import java.util.stream.Collectors;
 
 //XXX delete case sensitive
 //XXX delete startsWith/endsWith
-//TODO method to find out the most used word
+//DONE method to find out the most used word
+//TODO implement stats methods, i.e. average length of word, longest/shortest word
 
 /**
- * Class to process the text gathered by the Parser. Pass an instance of the
+ * Class to process the text gathered by the FileParser. Pass an instance of the
  * parsed text as a List<> to the constructor.
  * 
  * @author Basti
@@ -53,8 +54,7 @@ public class TextProcessor {
 	 */
 	public int count() {
 		return text.size();
-	}
-	
+	}	
 
 	/**
 	 * Returns number of occurrences of a String in the text
@@ -71,8 +71,7 @@ public class TextProcessor {
 		// retrieve a stream from the text list, filter elements that don't
 		// satisfy the BiPredicate and count the result
 		return (int) text.stream().filter((x) -> biPred.test(x, s)).count();
-	}
-	
+	}	
 
 	/**
 	 * Finds first match in the text.
@@ -108,6 +107,8 @@ public class TextProcessor {
 	 */
 	public int getLastIndex(String s, BiPredicate<String, String> biPred) {
 
+		//iterate over list backwards and return index of first element to satisfy the BiPredicate
+		//return -1 if no element is found
 		for (int i = text.size() - 1; i >= 0; i--) {
 			if (biPred.test(text.get(i), s)) {
 				return i;
@@ -152,22 +153,20 @@ public class TextProcessor {
 	 * Not suitable for large texts, since the order of magnitude is very
 	 * high!!!!
 	 * 
-	 * @param biPred
-	 *            BiPredicate to choose whether to ignore case or not
 	 * @return The word with the highest frequency
 	 */
-	public String getMostUsedWord(BiPredicate<String, String> biPred) {
+	public String getMostUsedWord() {
 
 		int highestIndex = -1;
 		int highest = 0;
 
 		// get a distinct list of words that appear more than once
-		List<String> distinct = text.stream().filter((x) -> countOccurences(x, biPred) > 1).distinct()
+		List<String> distinct = text.stream().filter((x) -> countOccurences(x, String::equalsIgnoreCase) > 1).distinct()
 				.collect(Collectors.toList());
 
 		// get a list of occurrences whose indices correspond to the list of
 		// distinct words
-		List<Integer> occurenceList = text.stream().map((x) -> countOccurences(x, biPred)).collect(Collectors.toList());
+		List<Integer> occurenceList = text.stream().map((x) -> countOccurences(x,  String::equalsIgnoreCase)).collect(Collectors.toList());
 
 		// iterate over the occurrences list and find the index with the highest
 		// occurrence
@@ -181,6 +180,46 @@ public class TextProcessor {
 		return distinct.get(highestIndex);
 	}
 
+	/**
+	 * Finds the average length of all words in the text. 
+	 * @return the average length or -1 if no average could be calculated
+	 */
+	public double averageWordLength(){
+		return text.stream().mapToDouble(String::length).average().orElse(-1);
+	}
+	
+	/**
+	 * Finds the length of the longest word or words.
+	 * @return length of the longest word
+	 */
+	public int longestWord(){
+		return text.stream().mapToInt(String::length).max().orElse(-1);
+	}
+	
+	/**
+	 * Finds the length of the shortest word or words.
+	 * @return length of the shortest word
+	 */
+	public int shortestWord(){
+		return text.stream().mapToInt(String::length).min().orElse(-1);
+	}
+	/**
+	 * Counts sentences that are delimited by a full stop (".")
+	 * @return number of sentences
+	 */
+	public int countSentences(){
+		return (int) text.stream().filter((x)-> x.endsWith(".")).count();
+	}
+	
+	/**
+	 * Finds all words with the specified length.
+	 * @param length int
+	 * @return List of words in the specified length
+	 */
+	public List<String> findWordsOfLength(int length){
+		return text.stream().filter((x) -> x.length() == length).collect(Collectors.toList());
+	}
+	
 	/**
 	 * Deletes elements at index
 	 * 
