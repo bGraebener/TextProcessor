@@ -110,12 +110,6 @@ public class ProcessorTest {
 		assertTrue("Wrong eaverage", expected == actual);
 	}
 	
-	@Test
-	public void longestWordTest(){
-		int expected = 6;
-		int actual = proc.longestWord();
-		assertTrue("Wrong length found", expected == actual);
-	}
 	
 	@Test
 	public void shortestWordTest(){

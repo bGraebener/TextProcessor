@@ -7,6 +7,7 @@ package ie.gmit.java2.model;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiPredicate;
 
 import ie.gmit.java2.controller.MainWindowController;
@@ -123,28 +124,28 @@ public class Handler {
 	}
 
 	public String getStats() {
-		
+
 		if (!text.isEmpty()) {
 			processor = new TextProcessor(text);
 		}
 
 		int elementsCount = processor.count();
 		String mostUsed = processor.getMostUsedWord();
-		int longestWord = processor.longestWord();
-		List<String> longestWords = processor.findWordsOfLength(longestWord);
+		Map<Integer, String> longestWord = processor.longestWord();
 		int shortestWord = processor.shortestWord();
 		double averageWordLength = processor.averageWordLength();
 		int numOfSentences = processor.countSentences();
 		int mostUsedAmount = processor.countOccurences(mostUsed, String::equalsIgnoreCase);
 
-		statsAsString.append("\nLongest word has " + longestWord + " characters\n");
-		statsAsString.append("\nLongest word is " + longestWords.get(0) + " characters\n");
+		longestWord
+				.forEach((k, v) -> statsAsString.append("Longest Word(s): \"" + v + "\" with " + k + " characters\n"));
 		statsAsString.append("Shortest word has " + shortestWord + " characters\n");
-		statsAsString.append("Average word length is: " + averageWordLength+ "\n");
-		statsAsString.append("Number of sentences: " + numOfSentences+ "\n");
+		statsAsString.append("Average word length is: " + averageWordLength + "\n");
+		statsAsString.append("Number of sentences: " + numOfSentences + "\n");
 		statsAsString.append("Total amount of elements: " + elementsCount + "\n");
-		statsAsString.append("Most used word: " + mostUsed + "\n");
-		statsAsString.append("Most used word frequency: " + mostUsedAmount + "\n\n");
+		statsAsString.append("Most used word: \"" + mostUsed + "\" with a frequency of: " + mostUsedAmount + "\n\n");
+		// statsAsString.append("Most used word frequency: " + mostUsedAmount +
+		// "\n\n");
 
 		return statsAsString.toString();
 	}

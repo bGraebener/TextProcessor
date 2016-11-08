@@ -10,8 +10,9 @@ import java.util.*;
 
 //TODO Javadocs for classes
 //TODO validate input
-//TODO use BufferedReader instead of Scanner
+//DONE use BufferedReader instead of Scanner
 //DONE make interface for FileParser?
+//TODO add regex
 
 /**
  * Class to parse text from a file. Call the static getText() method and specify
@@ -33,46 +34,65 @@ public class FileParser extends Parser {
 	 * 
 	 * @return The list of Strings retrieved
 	 */
-	@Override
-	public List<String> parse() {
+	// @Override
+	public List<String> parse2() {
 		List<String> text = new ArrayList<>();
-		List<String> text2 = new ArrayList<>();
-		
+
 		try {
 			setScan(new Scanner(new FileReader(new File(getSourcePath()))));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 
-//		try {
-//			BufferedReader reader = new BufferedReader(new FileReader(new File(getSourcePath())));
-//
-//			String b = null;
-//			while ((b = reader.readLine()) != null) {
-//				text2.add(b);
-//			}
-//			
-//			List<String> text3 = null;
-//			
-//			for (int i = 0; i < text2.size(); i++) {
-//						
-//				String words[] = text2.get(i).split(".");
-//				
-//				text3 = Arrays.asList(words);
-//			}
-//			
-//			reader.close();
-//			text3.remove(0);
-//			
-//			
-//			
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-
 		getScan().forEachRemaining(text::add);
 
+		for (int i = 0; i < text.size(); i++) {
+
+			String replace = text.get(i).replaceAll("\\--", " ");
+			text.set(i, replace);
+
+		}
+
 		return new ArrayList<>(text);
+	}
+
+	@Override
+	public List<String> parse() {
+
+		List<String> text2 = new ArrayList<>();
+		List<String> text3 = new ArrayList<>();
+		String words[];
+
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(new File(getSourcePath())));
+
+			String b = null;
+			while ((b = reader.readLine()) != null) {
+				text2.add(b);
+			}
+
+			for (int i = 0; i < text2.size(); i++) {
+
+				words = text2.get(i).replace("--", " ").split("\\s+");
+
+				text3.addAll(Arrays.asList(words));
+			}
+
+			reader.close();
+
+			for (int i = 0; i < text3.size(); i++) {
+
+				if (text3.get(i).equals(" ") || text3.get(i).isEmpty()) {
+					text3.remove(i);
+					i--;
+				}
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return new ArrayList<String>(text3);
 	}
 
 }

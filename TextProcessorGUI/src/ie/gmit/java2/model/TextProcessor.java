@@ -4,14 +4,19 @@
 
 package ie.gmit.java2.model;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.function.BiPredicate;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 //XXX delete case sensitive
 //XXX delete startsWith/endsWith
 //DONE method to find out the most used word
 //TODO implement stats methods, i.e. average length of word, longest/shortest word
+//TODO add regex to methods
 
 /**
  * Class to process the text gathered by the FileParser. Pass an instance of the
@@ -54,7 +59,7 @@ public class TextProcessor {
 	 */
 	public int count() {
 		return text.size();
-	}	
+	}
 
 	/**
 	 * Returns number of occurrences of a String in the text
@@ -67,11 +72,11 @@ public class TextProcessor {
 	 * @return the number of occurrences of String s
 	 */
 	public int countOccurences(String s, BiPredicate<String, String> biPred) {
-		
+
 		// retrieve a stream from the text list, filter elements that don't
 		// satisfy the BiPredicate and count the result
 		return (int) text.stream().filter((x) -> biPred.test(x, s)).count();
-	}	
+	}
 
 	/**
 	 * Finds first match in the text.
@@ -84,9 +89,10 @@ public class TextProcessor {
 	 * @return index of first match or -1 if no match found
 	 */
 	public int getFirstIndex(String s, BiPredicate<String, String> biPred) {
-		
-		//iterate over the list and return the index of the first element that satisfies the BiPredicate
-		//return -1 if no element is found 
+
+		// iterate over the list and return the index of the first element that
+		// satisfies the BiPredicate
+		// return -1 if no element is found
 		for (int i = 0; i < text.size(); i++) {
 			if (biPred.test(text.get(i), s)) {
 				return i;
@@ -107,8 +113,9 @@ public class TextProcessor {
 	 */
 	public int getLastIndex(String s, BiPredicate<String, String> biPred) {
 
-		//iterate over list backwards and return index of first element to satisfy the BiPredicate
-		//return -1 if no element is found
+		// iterate over list backwards and return index of first element to
+		// satisfy the BiPredicate
+		// return -1 if no element is found
 		for (int i = text.size() - 1; i >= 0; i--) {
 			if (biPred.test(text.get(i), s)) {
 				return i;
@@ -161,12 +168,13 @@ public class TextProcessor {
 		int highest = 0;
 
 		// get a distinct list of words that appear more than once
-		List<String> distinct = text.stream().filter((x) -> countOccurences(x, String::equalsIgnoreCase) > 1).distinct()
-				.collect(Collectors.toList());
+		List<String> distinct = text.parallelStream().filter((x) -> countOccurences(x, String::equalsIgnoreCase) > 1)
+				.distinct().collect(Collectors.toList());
 
 		// get a list of occurrences whose indices correspond to the list of
 		// distinct words
-		List<Integer> occurenceList = text.stream().map((x) -> countOccurences(x,  String::equalsIgnoreCase)).collect(Collectors.toList());
+		List<Integer> occurenceList = distinct.parallelStream().map((x) -> countOccurences(x, String::equalsIgnoreCase))
+				.collect(Collectors.toList());
 
 		// iterate over the occurrences list and find the index with the highest
 		// occurrence
@@ -177,49 +185,72 @@ public class TextProcessor {
 				highestIndex = i;
 			}
 		}
-		return distinct.get(highestIndex);
+		return distinct.get(highestIndex);		
 	}
 
 	/**
-	 * Finds the average length of all words in the text. 
+	 * Finds the average length of all words in the text.
+	 * 
 	 * @return the average length or -1 if no average could be calculated
 	 */
-	public double averageWordLength(){
+	public double averageWordLength() {
 		return text.stream().mapToDouble(String::length).average().orElse(-1);
 	}
-	
+
 	/**
-	 * Finds the length of the longest word or words.
-	 * @return length of the longest word
+	 * Finds the longest word or words and their length
+	 * 
+	 * @return Map<Integer,String> with the longest length and the corresponding
+	 *         words
 	 */
-	public int longestWord(){
-		return text.stream().mapToInt(String::length).max().orElse(-1);
+	public Map<Integer, String> longestWord() {
+		//group words according to their length
+		Map<Integer, String> longestMap = text.stream()
+				.collect(Collectors.toMap(String::length, Function.identity(), (s, k) -> s + "," + k));
+
+		//find the longest key
+		int longest = longestMap.keySet().stream().max(Integer::compareTo).get();
+		
+		//find the words with the longest
+		String longestString = longestMap.get(longest);
+		
+		//store the two results in a map
+		Map<Integer, String> result = new HashMap<>();
+		result.put(longest, longestString);
+
+		return result;
 	}
-	
+
 	/**
 	 * Finds the length of the shortest word or words.
+	 * 
 	 * @return length of the shortest word
 	 */
-	public int shortestWord(){
+	public int shortestWord() {
 		return text.stream().mapToInt(String::length).min().orElse(-1);
 	}
+
 	/**
 	 * Counts sentences that are delimited by a full stop (".")
+	 * 
 	 * @return number of sentences
 	 */
-	public int countSentences(){
-		return (int) text.stream().filter((x)-> x.endsWith(".")).count();
+	public int countSentences() {
+//		return (int) text.stream().filter((x) -> x.endsWith(".")).count();
+		return (int) text.stream().filter((x) -> x.matches("\\w.|\\w?|\\w!")).count();
 	}
-	
+
 	/**
 	 * Finds all words with the specified length.
-	 * @param length int
+	 * 
+	 * @param length
+	 *            int
 	 * @return List of words in the specified length
 	 */
-	public List<String> findWordsOfLength(int length){
+	public List<String> findWordsOfLength(int length) {
 		return text.stream().filter((x) -> x.length() == length).collect(Collectors.toList());
 	}
-	
+
 	/**
 	 * Deletes elements at index
 	 * 
