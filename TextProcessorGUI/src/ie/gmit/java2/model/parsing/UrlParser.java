@@ -50,7 +50,7 @@ public class UrlParser extends Parser {
 
 			for (int i = 0; i < text2.size(); i++) {
 
-				words = text2.get(i).replace("--", " ").split("\\s+");
+				words = text2.get(i).replaceAll("[-,;\"]", " ").split("\\s+");
 
 				text3.addAll(Arrays.asList(words));
 			}

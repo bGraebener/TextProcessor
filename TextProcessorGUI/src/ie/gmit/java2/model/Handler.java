@@ -5,15 +5,12 @@
 package ie.gmit.java2.model;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiPredicate;
 
 import ie.gmit.java2.controller.MainWindowController;
 import ie.gmit.java2.controller.TextViewController;
-import ie.gmit.java2.model.parsing.FileParser;
-import ie.gmit.java2.model.parsing.UrlParser;
+import ie.gmit.java2.model.parsing.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -74,11 +71,11 @@ public class Handler {
 
 		switch (sourceType) {
 		case FILE:
-			FileParser fileParser = new FileParser(sourcePath);
+			Parseable fileParser = new FileParser(sourcePath);
 			text = fileParser.parse();
 			break;
 		case URL:
-			UrlParser urlParser = new UrlParser(sourcePath);
+			Parseable urlParser = new UrlParser(sourcePath);
 			text = urlParser.parse();
 			break;
 		case OTHER:
@@ -118,7 +115,7 @@ public class Handler {
 		statsAsString.append("Num of Occurences: " + occurencesCount + "\n");
 		statsAsString.append("First Index: " + firstIndexOf + "\n");
 		statsAsString.append("Last Index: " + lastIndexOf + "\n");
-		statsAsString.append("Indices of occurences: " + Arrays.toString(occurencesIndices) + "\n");
+		statsAsString.append("Indices of occurences: " + Arrays.toString(occurencesIndices) + "\n\n");
 
 		return statsAsString.toString();
 	}
@@ -130,17 +127,17 @@ public class Handler {
 		}
 
 		int elementsCount = processor.count();
-		String mostUsed = processor.getMostUsedWord();
 		Map<Integer, String> longestWord = processor.longestWord();
 		int shortestWord = processor.shortestWord();
 		double averageWordLength = processor.averageWordLength();
 		int numOfSentences = processor.countSentences();
+		String mostUsed = processor.getMostUsedWord();
 		int mostUsedAmount = processor.countOccurences(mostUsed, String::equalsIgnoreCase);
 
 		longestWord
 				.forEach((k, v) -> statsAsString.append("Longest Word(s): \"" + v + "\" with " + k + " characters\n"));
 		statsAsString.append("Shortest word has " + shortestWord + " characters\n");
-		statsAsString.append("Average word length is: " + averageWordLength + "\n");
+		statsAsString.append(String.format("Average word length is: %.2f\n", averageWordLength));
 		statsAsString.append("Number of sentences: " + numOfSentences + "\n");
 		statsAsString.append("Total amount of elements: " + elementsCount + "\n");
 		statsAsString.append("Most used word: \"" + mostUsed + "\" with a frequency of: " + mostUsedAmount + "\n\n");

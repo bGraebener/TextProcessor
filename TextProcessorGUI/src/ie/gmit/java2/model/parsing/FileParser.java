@@ -5,7 +5,6 @@
 package ie.gmit.java2.model.parsing;
 
 import java.io.*;
-import java.net.URL;
 import java.util.*;
 
 //TODO Javadocs for classes
@@ -48,7 +47,7 @@ public class FileParser extends Parser {
 
 		for (int i = 0; i < text.size(); i++) {
 
-			String replace = text.get(i).replaceAll("\\--", " ");
+			String replace = text.get(i).replaceAll("\\-- |\\[,]", " ");
 			text.set(i, replace);
 
 		}
@@ -73,7 +72,7 @@ public class FileParser extends Parser {
 
 			for (int i = 0; i < text2.size(); i++) {
 
-				words = text2.get(i).replace("--", " ").split("\\s+");
+				words = text2.get(i).replaceAll("[-,;\"]", " ").split("\\s+");
 
 				text3.addAll(Arrays.asList(words));
 			}

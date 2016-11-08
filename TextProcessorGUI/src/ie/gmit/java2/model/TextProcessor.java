@@ -4,10 +4,7 @@
 
 package ie.gmit.java2.model;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -75,7 +72,7 @@ public class TextProcessor {
 
 		// retrieve a stream from the text list, filter elements that don't
 		// satisfy the BiPredicate and count the result
-		return (int) text.stream().filter((x) -> biPred.test(x, s)).count();
+		return (int) text.parallelStream().filter((x) -> biPred.test(x, s)).count();
 	}
 
 	/**
@@ -194,7 +191,7 @@ public class TextProcessor {
 	 * @return the average length or -1 if no average could be calculated
 	 */
 	public double averageWordLength() {
-		return text.stream().mapToDouble(String::length).average().orElse(-1);
+		return text.parallelStream().mapToDouble(String::length).average().orElse(-1);
 	}
 
 	/**
@@ -205,8 +202,8 @@ public class TextProcessor {
 	 */
 	public Map<Integer, String> longestWord() {
 		//group words according to their length
-		Map<Integer, String> longestMap = text.stream()
-				.collect(Collectors.toMap(String::length, Function.identity(), (s, k) -> s + "," + k));
+		Map<Integer, String> longestMap = text.parallelStream()
+				.collect(Collectors.toMap(String::length, Function.identity(), (s, k) -> s + " " + k));
 
 		//find the longest key
 		int longest = longestMap.keySet().stream().max(Integer::compareTo).get();
