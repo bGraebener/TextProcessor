@@ -20,6 +20,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 //TODO implement stats method 
+//TODO Comments
 
 /**
  * Class that retrieves the results from the users query and passes it back to
@@ -44,9 +45,6 @@ public class Handler {
 
 	public Handler(MainWindowController mwc) {
 		this.mwc = mwc;
-		// statsAsString = new StringBuilder(
-		// "UserInput\t\t\tcontains\t\t\tfirst index\t\t\tlast index\t\t\tocc.
-		// count\t# elements\n");
 		statsAsString = new StringBuilder();
 
 		startsWith = String::startsWith;
