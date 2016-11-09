@@ -38,10 +38,6 @@ import javafx.stage.Stage;
  */
 public class Handler {
 
-	public static enum Source {
-		URL, FILE, OTHER
-	};
-
 	private List<String> text;
 	private BiPredicate<String, String> caseSensitive, startsWith, endsWith, combined;
 	private MainWindowController mwc;
@@ -57,9 +53,9 @@ public class Handler {
 		startsWith = String::startsWith;
 		endsWith = String::endsWith;
 
+		//universal alert settings
 		alert = new Alert(AlertType.INFORMATION);
 		alert.setHeaderText(null);
-
 	}
 
 	/**

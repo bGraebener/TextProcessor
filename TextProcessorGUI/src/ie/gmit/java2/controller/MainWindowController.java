@@ -139,9 +139,6 @@ public class MainWindowController {
 	 * provided and passes it to the Handler getStats() method.
 	 * 
 	 * @param event
-	 * @throws TimeoutException
-	 * @throws ExecutionException
-	 * @throws InterruptedException
 	 */
 	@FXML
 	private void search(ActionEvent event) {
