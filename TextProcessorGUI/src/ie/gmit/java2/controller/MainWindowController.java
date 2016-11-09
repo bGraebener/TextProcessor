@@ -1,16 +1,21 @@
 package ie.gmit.java2.controller;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import ie.gmit.java2.model.Handler;
-import ie.gmit.java2.model.Handler.Source;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 
 //XXX comment
@@ -22,7 +27,8 @@ import javafx.stage.FileChooser;
  * The controller class for the main view. It handles the button events and
  * checks if user input is present. If the required input is missing it prompts
  * for input. It passes the input the to Handler Class that performs all
- * operations. It then updates the view with the results retrieved from the Handler.
+ * operations. It then updates the view with the results retrieved from the
+ * Handler.
  * 
  * @author Basti
  *
@@ -108,10 +114,23 @@ public class MainWindowController {
 		}
 
 		else if (!fileTextField.getText().isEmpty()) {
-			handler.parse(fileTextField.getText(), Source.FILE);
+			File selectedFile = new File(fileTextField.getText());
+
+			if (selectedFile.exists()) {
+				handler.parse(selectedFile);				
+				
+			} else {
+				alert.setContentText("File does not exist!");
+				alert.show();
+			}
 
 		} else if (!urlTextField.getText().isEmpty()) {
-			handler.parse(urlTextField.getText(), Source.URL);
+			
+			try {
+				handler.parse(new URL (urlTextField.getText()));
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -120,9 +139,9 @@ public class MainWindowController {
 	 * provided and passes it to the Handler getStats() method.
 	 * 
 	 * @param event
-	 * @throws TimeoutException 
-	 * @throws ExecutionException 
-	 * @throws InterruptedException 
+	 * @throws TimeoutException
+	 * @throws ExecutionException
+	 * @throws InterruptedException
 	 */
 	@FXML
 	private void search(ActionEvent event) {
@@ -140,13 +159,13 @@ public class MainWindowController {
 	}
 
 	@FXML
-	private void showStats(){
-		
+	private void showStats() {
+
 		String stats = handler.getStats();
 		textArea.setText(stats);
-		
+
 	}
-	
+
 	/**
 	 * Event handler for the Delete button. Checks whether a delete string was
 	 * provided and passes it to the Handler delete() method.
@@ -164,15 +183,15 @@ public class MainWindowController {
 
 		handler.delete(deleteTextField.getText());
 	}
-	
+
 	/**
-	 * Event handler for the clear window button.  
+	 * Event handler for the clear window button.
 	 */
 	@FXML
-	private void clearTextArea(){		
+	private void clearTextArea() {
 		textArea.setText(handler.clearText());
 	}
-	
+
 	/**
 	 * Event handler for the show text button. Delegates to the Handlers
 	 * showText() method.

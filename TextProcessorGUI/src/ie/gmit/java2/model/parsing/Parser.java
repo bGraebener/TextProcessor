@@ -7,43 +7,50 @@ package ie.gmit.java2.model.parsing;
 import java.io.*;
 import java.util.*;
 
+/**
+ * Abstract superclass for all classes responsible for parsing text. The
+ * subclasses only responsibility is to set the BuffererdReader with the
+ * suitable arguments for the source type.
+ * 
+ * @author Basti
+ *
+ */
 public abstract class Parser implements Parseable {
 
-	private String sourcePath;
 	private BufferedReader reader;
 
 	/**
 	 * Method that tries to retrieve text from the specified source. It stores
-	 * the found Strings in a List<String>
+	 * the found Strings in a List<String>.  
 	 * 
 	 * @return The list of Strings retrieved
 	 */
 	@Override
 	public List<String> parse() {
 
-		if(sourcePath == null || reader == null){
+		if (reader == null) {
 			throw new IllegalArgumentException();
 		}
-		
-		List<String> text2 = new ArrayList<>();
-		List<String> text3 = new ArrayList<>();
-		String words[];
+
+		List<String> listOfines = new ArrayList<>();
+		List<String> listOfWords = new ArrayList<>();
+		String wordsArray[];
 
 		try {
 
 			String b = null;
 			while ((b = reader.readLine()) != null) {
-				text2.add(b);
+				listOfines.add(b);
 			}
 
-			for (int i = 0; i < text2.size(); i++) {
-				words = text2.get(i).replaceAll("[-,;\"]", " ").split("\\s+");
-				text3.addAll(Arrays.asList(words));
+			for (int i = 0; i < listOfines.size(); i++) {
+				wordsArray = listOfines.get(i).replaceAll("[-,;\"]", " ").split("\\s+");
+				listOfWords.addAll(Arrays.asList(wordsArray));
 			}
 
-			for (int i = 0; i < text3.size(); i++) {
-				if (text3.get(i).equals(" ") || text3.get(i).isEmpty()) {
-					text3.remove(i);
+			for (int i = 0; i < listOfWords.size(); i++) {
+				if (listOfWords.get(i).equals(" ") || listOfWords.get(i).isEmpty()) {
+					listOfWords.remove(i);
 					i--;
 				}
 			}
@@ -52,16 +59,9 @@ public abstract class Parser implements Parseable {
 			e.printStackTrace();
 		}
 
-		return new ArrayList<String>(text3);
+		return new ArrayList<String>(listOfWords);
 	}
 
-	protected final String getSourcePath() {
-		return sourcePath;
-	}
-
-	protected final void setSourcePath(String sourcePath) {
-		this.sourcePath = sourcePath;
-	}
 
 	public final BufferedReader getReader() {
 		return reader;

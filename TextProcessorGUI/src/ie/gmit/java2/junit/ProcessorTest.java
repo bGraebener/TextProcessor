@@ -4,6 +4,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.util.List;
 import java.util.function.BiPredicate;
 
@@ -12,6 +13,7 @@ import org.junit.Test;
 
 import ie.gmit.java2.model.TextProcessor;
 import ie.gmit.java2.model.parsing.FileParser;
+import ie.gmit.java2.model.parsing.Parseable;
 import ie.gmit.java2.model.parsing.UrlParser;
 
 public class ProcessorTest {
@@ -19,8 +21,8 @@ public class ProcessorTest {
 	private TextProcessor proc;
 	private List<String> text;
 	
-	private FileParser fileParser;
-	private UrlParser urlParser;
+	private Parseable fileParser;
+	private Parseable urlParser;
 	
 	private BiPredicate<String, String> start = String::startsWith;
 	private BiPredicate<String, String> ends = String::endsWith;
@@ -28,7 +30,7 @@ public class ProcessorTest {
 
 	@Before
 	public void setUp() throws Exception {
-		fileParser = new FileParser("res/test.txt");
+		fileParser = new FileParser(new File("U:/Year 2/Java 2/test.txt"));
 		text = fileParser.parse();
 		
 //		urlParser = new UrlParser("https://www.gutenberg.org/files/2701/2701.txt");
@@ -109,14 +111,7 @@ public class ProcessorTest {
 		double actual = proc.averageWordLength();
 		assertTrue("Wrong eaverage", expected == actual);
 	}
-	
-	
-	@Test
-	public void shortestWordTest(){
-		int expected = 2;
-		int actual = proc.shortestWord();
-		assertTrue("Wrong length found", expected == actual);
-	}
+
 
 	@Test
 	public void countSentencesTest(){

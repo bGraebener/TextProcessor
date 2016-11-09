@@ -4,13 +4,19 @@
 
 package ie.gmit.java2.model;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.function.BiPredicate;
 
 import ie.gmit.java2.controller.MainWindowController;
 import ie.gmit.java2.controller.TextViewController;
-import ie.gmit.java2.model.parsing.*;
+import ie.gmit.java2.model.parsing.FileParser;
+import ie.gmit.java2.model.parsing.Parseable;
+import ie.gmit.java2.model.parsing.UrlParser;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -19,12 +25,13 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-//TODO implement stats method 
+//DONE implement stats method 
 //TODO Comments
 
 /**
  * Class that retrieves the results from the users query and passes it back to
- * the Controller class.
+ * the Controller class. Functions as a Bufferclass for the MainWindowController
+ * and the model classes.
  * 
  * @author Basti
  *
@@ -65,30 +72,27 @@ public class Handler {
 	 * @param sourceType
 	 *            the type of the source
 	 */
-	public void parse(String sourcePath, Source sourceType) {
+	public void parse(URL source) {
 
-		switch (sourceType) {
-		case FILE:
-			Parseable fileParser = new FileParser(sourcePath);
-			text = fileParser.parse();
-			break;
-		case URL:
-			Parseable urlParser = new UrlParser(sourcePath);
-			text = urlParser.parse();
-			break;
-		case OTHER:
-		default:
-			throw new IllegalArgumentException("Invalid source");
-		}
+		Parseable urlParser = new UrlParser(source);
+		text = urlParser.parse();
 
 		alert.setContentText("Text parsed!");
 		alert.show();
+	}
 
+	public void parse(File source) {
+
+		Parseable fileParser = new FileParser(source);
+		text = fileParser.parse();
+
+		alert.setContentText("Text parsed!");
+		alert.show();
 	}
 
 	/**
-	 * Method that retrieves all data from the user query by calling the methods
-	 * from the TextProcessor class.
+	 * Method that retrieves all data from the user search or delete query by
+	 * calling the methods from the TextProcessor class.
 	 * 
 	 * @param userInput
 	 *            The search String specified by the user.
@@ -118,6 +122,12 @@ public class Handler {
 		return statsAsString.toString();
 	}
 
+	/**
+	 * Gathers statistical details from the TextProcessor class and builds a
+	 * String for the Controller to set in the display.
+	 * 
+	 * @return The results of the stats operations as a String.
+	 */
 	public String getStats() {
 
 		if (!text.isEmpty()) {
@@ -126,21 +136,28 @@ public class Handler {
 
 		int elementsCount = processor.count();
 		Map<Integer, String> longestWord = processor.longestWord();
-		int shortestWord = processor.shortestWord();
 		double averageWordLength = processor.averageWordLength();
 		int numOfSentences = processor.countSentences();
-		String mostUsed = processor.getMostUsedWord();
+
+		// skip mostUsedMethod if text size is greater than 10,000 because of
+		// runtime
+		String mostUsed = elementsCount > 10_000 ? "Most used word: Skipped due to large text size!\n"
+				: processor.getMostUsedWord();
+
 		int mostUsedAmount = processor.countOccurences(mostUsed, String::equalsIgnoreCase);
 
-		longestWord
-				.forEach((k, v) -> statsAsString.append("Longest Word(s): \"" + v + "\" with " + k + " characters\n"));
-		statsAsString.append("Shortest word has " + shortestWord + " characters\n");
+		longestWord.forEach(
+				(k, v) -> statsAsString.append("\nLongest Word(s): \"" + v + "\" with " + k + " characters\n"));
 		statsAsString.append(String.format("Average word length is: %.2f\n", averageWordLength));
 		statsAsString.append("Number of sentences: " + numOfSentences + "\n");
 		statsAsString.append("Total amount of elements: " + elementsCount + "\n");
-		statsAsString.append("Most used word: \"" + mostUsed + "\" with a frequency of: " + mostUsedAmount + "\n\n");
-		// statsAsString.append("Most used word frequency: " + mostUsedAmount +
-		// "\n\n");
+
+		if (elementsCount > 10_000) {
+			statsAsString.append(mostUsed);
+		} else {
+			statsAsString
+					.append("Most used word: \"" + mostUsed + "\" with a frequency of: " + mostUsedAmount + "\n\n");
+		}
 
 		return statsAsString.toString();
 	}
@@ -233,7 +250,7 @@ public class Handler {
 
 	/**
 	 * Sets the BiPredicats according to the settings chosen by the user. The
-	 * Case-Sensitive option can only be chosen if the startsWith and endsWith
+	 * case-sensitive option can only be chosen if the startsWith and endsWith
 	 * options are disabled.
 	 */
 	private void setOptions() {

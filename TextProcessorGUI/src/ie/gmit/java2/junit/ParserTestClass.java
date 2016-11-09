@@ -4,6 +4,10 @@
 
 package ie.gmit.java2.junit;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import org.junit.*;
 
 import ie.gmit.java2.model.parsing.FileParser;
@@ -17,8 +21,12 @@ public class ParserTestClass {
 	@Ignore
 	@Before
 	public void setUp() {
-		fileParser = new FileParser("res/test.txt");
-		urlParser = new UrlParser("res/test.txt");
+		fileParser = new FileParser(new File("res/test.txt"));
+		try {
+			urlParser = new UrlParser(new URL("res/test.txt"));
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Ignore
@@ -31,7 +39,7 @@ public class ParserTestClass {
 	
 	@Test(expected = UnsupportedOperationException.class)
 	public void testList() {
-		fileParser = new FileParser("res/test.txt");
+		fileParser = new FileParser(new File("res/test.txt"));
 		fileParser.parse();
 	}
 
