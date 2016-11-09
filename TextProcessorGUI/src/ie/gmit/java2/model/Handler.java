@@ -7,16 +7,13 @@ package ie.gmit.java2.model;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiPredicate;
 
 import ie.gmit.java2.controller.MainWindowController;
 import ie.gmit.java2.controller.TextViewController;
-import ie.gmit.java2.model.parsing.FileParser;
-import ie.gmit.java2.model.parsing.Parseable;
-import ie.gmit.java2.model.parsing.UrlParser;
+import ie.gmit.java2.model.parsing.*;
+import ie.gmit.java2.model.processing.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -41,19 +38,20 @@ public class Handler {
 	private List<String> text;
 	private BiPredicate<String, String> caseSensitive, startsWith, endsWith, combined;
 	private MainWindowController mwc;
+	private Processor analyser, searcher;
 	private StringBuilder statsAsString;
-	private TextProcessor processor;
 
 	private Alert alert;
 
 	public Handler(MainWindowController mwc) {
 		this.mwc = mwc;
 		statsAsString = new StringBuilder();
-
+		
+		// intialise BiPredicates
 		startsWith = String::startsWith;
 		endsWith = String::endsWith;
 
-		//universal alert settings
+		// universal alert settings
 		alert = new Alert(AlertType.INFORMATION);
 		alert.setHeaderText(null);
 	}
@@ -88,7 +86,7 @@ public class Handler {
 
 	/**
 	 * Method that retrieves all data from the user search or delete query by
-	 * calling the methods from the TextProcessor class.
+	 * calling the methods from the TextSearcher class.
 	 * 
 	 * @param userInput
 	 *            The search String specified by the user.
@@ -99,63 +97,29 @@ public class Handler {
 		setOptions();
 
 		if (!text.isEmpty()) {
-			processor = new TextProcessor(text);
+			searcher = new TextSearcher(text);
+			return searcher.process(userInput, combined);
+		}else{
+			return "No text found";
 		}
 
-		boolean containsUserInput = processor.contains(userInput, combined);
-		int firstIndexOf = processor.getFirstIndex(userInput, combined);
-		int lastIndexOf = processor.getLastIndex(userInput, combined);
-		int occurencesCount = processor.countOccurences(userInput, combined);
-		int[] occurencesIndices = processor.getAllIndeces(userInput, combined);
 
-		statsAsString.append("\nUser Input: " + userInput + "\n");
-		statsAsString.append("Contains Input: " + containsUserInput + "\n");
-		statsAsString.append("Num of Occurences: " + occurencesCount + "\n");
-		statsAsString.append("First Index: " + firstIndexOf + "\n");
-		statsAsString.append("Last Index: " + lastIndexOf + "\n");
-		statsAsString.append("Indices of occurences: " + Arrays.toString(occurencesIndices) + "\n\n");
-
-		return statsAsString.toString();
 	}
 
 	/**
-	 * Gathers statistical details from the TextProcessor class and builds a
+	 * Gathers statistical details from the TextSearcher class and builds a
 	 * String for the Controller to set in the display.
 	 * 
 	 * @return The results of the stats operations as a String.
 	 */
 	public String getStats() {
-
+		
 		if (!text.isEmpty()) {
-			processor = new TextProcessor(text);
+			analyser = new TextAnalyser(text);
+			return analyser.process(null, combined);
+		}else{
+			return "No text found";
 		}
-
-		int elementsCount = processor.count();
-		Map<Integer, String> longestWord = processor.longestWord();
-		double averageWordLength = processor.averageWordLength();
-		int numOfSentences = processor.countSentences();
-
-		// skip mostUsedMethod if text size is greater than 10,000 because of
-		// runtime
-		String mostUsed = elementsCount > 10_000 ? "Most used word: Skipped due to large text size!\n"
-				: processor.getMostUsedWord();
-
-		int mostUsedAmount = processor.countOccurences(mostUsed, String::equalsIgnoreCase);
-
-		longestWord.forEach(
-				(k, v) -> statsAsString.append("\nLongest Word(s): \"" + v + "\" with " + k + " characters\n"));
-		statsAsString.append(String.format("Average word length is: %.2f\n", averageWordLength));
-		statsAsString.append("Number of sentences: " + numOfSentences + "\n");
-		statsAsString.append("Total amount of elements: " + elementsCount + "\n");
-
-		if (elementsCount > 10_000) {
-			statsAsString.append(mostUsed);
-		} else {
-			statsAsString
-					.append("Most used word: \"" + mostUsed + "\" with a frequency of: " + mostUsedAmount + "\n\n");
-		}
-
-		return statsAsString.toString();
 	}
 
 	/**
@@ -168,7 +132,7 @@ public class Handler {
 	 */
 	public void delete(String userInput) {
 
-		processor = new TextProcessor(text);
+		TextSearcher searcher = new TextSearcher(text);
 		boolean isInt = false;
 		int index;
 		int deletedCount;
@@ -188,13 +152,13 @@ public class Handler {
 		// call appropriate delete method
 		if (isInt) {
 			index = Integer.parseInt(userInput);
-			deletedString = processor.delete(index);
+			deletedString = searcher.delete(index);
 
 			alert.setContentText("Deleted Item: " + deletedString);
 			alert.show();
 
 		} else {
-			deletedCount = processor.delete(userInput, combined);
+			deletedCount = searcher.delete(userInput, combined);
 			alert.setContentText("Number of deleted elements: " + deletedCount);
 			alert.show();
 		}
@@ -207,18 +171,21 @@ public class Handler {
 	 */
 	public void showText() {
 
+		TextSearcher searcher;
+		TextAnalyser analyser;
 		if (text == null || text.isEmpty()) {
 			return;
 		}
-		processor = new TextProcessor(text);
-
+		searcher = new TextSearcher(text);
+		analyser = new TextAnalyser(text);
+		
 		// open the TextView Window
 		try {
 			FXMLLoader textViewLoader = new FXMLLoader(getClass().getResource("/ie/gmit/java2/view/TextView.fxml"));
 			AnchorPane textViewPane = textViewLoader.load();
 
 			TextViewController textViewController = textViewLoader.getController();
-			textViewController.setText(processor.getText(), processor.count());
+			textViewController.setText(searcher.getText(), analyser.count());
 
 			Scene textViewScene = new Scene(textViewPane);
 

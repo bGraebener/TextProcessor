@@ -2,12 +2,11 @@
 	Created by Basti on 02.11.2016
 */
 
-package ie.gmit.java2.model;
+package ie.gmit.java2.model.processing;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.BiPredicate;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 //XXX delete case sensitive
 //XXX delete startsWith/endsWith
@@ -24,14 +23,35 @@ import java.util.stream.Collectors;
  * @author Basti
  *
  */
-public class TextProcessor {
+public class TextSearcher implements Processor{
 
 	private List<String> text;
 
-	// Constructor for the TextProcessor class, takes a List<Strings>
-	public TextProcessor(List<String> text) {
+	// Constructor for the TextSearcher class, takes a List<Strings>
+	public TextSearcher(List<String> text) {
 		// shallow copy of text, points to the Handlers List object
 		this.text = text;
+	}
+
+	@Override
+	public String process(String userInput, BiPredicate<String,String> combined) {
+		
+		StringBuilder statsAsString = new StringBuilder();
+		
+		boolean containsUserInput = contains(userInput, combined);
+		int firstIndexOf = getFirstIndex(userInput, combined);
+		int lastIndexOf = getLastIndex(userInput, combined);
+		int occurencesCount = countOccurences(userInput, combined);
+		int[] occurencesIndices = getAllIndeces(userInput, combined);
+
+		statsAsString.append("\nUser Input: " + userInput + "\n");
+		statsAsString.append("Contains Input: " + containsUserInput + "\n");
+		statsAsString.append("Num of Occurences: " + occurencesCount + "\n");
+		statsAsString.append("First Index: " + firstIndexOf + "\n");
+		statsAsString.append("Last Index: " + lastIndexOf + "\n");
+		statsAsString.append("Indices of occurences: " + Arrays.toString(occurencesIndices) + "\n\n");
+
+		return statsAsString.toString();
 	}
 
 	/**
@@ -182,101 +202,7 @@ public class TextProcessor {
 		return deleted;
 	}
 	
-	
-	/*
-	 * ===============       Stats methods    ====================
-	 */
-
-	/**
-	 * Returns the total number of elements in the String
-	 * 
-	 * @return the number of elements in the text
-	 */
-	public int count() {
-		return text.size();
-	}
-	
-
-	/**
-	 * Method that searches for the word with the highest frequency in a text.
-	 * Not suitable for large texts, since the order of magnitude is high!!!!
-	 * 
-	 * @return The word with the highest frequency
-	 */
-	public String getMostUsedWord() {
-
-		int counter = 0;
-		Map<Integer, String> mapOfOccurences = new HashMap<>();
-
-		for (int i = 0; i < text.size(); i++) {
-			counter = countOccurences(text.get(i), String::equalsIgnoreCase);
-			mapOfOccurences.put(counter, text.get(i));
-		}
-
-		int max = mapOfOccurences.keySet().stream().max(Integer::compareTo).get();
-		return mapOfOccurences.get(max);
-
-	}
-
-	/**
-	 * Finds the average length of all words in the text.
-	 * 
-	 * @return the average length or -1 if no average could be calculated
-	 */
-	public double averageWordLength() {
-		return text.parallelStream().mapToDouble(String::length).average().orElse(-1);
-	}
-
-	/**
-	 * Finds the longest word or words and their length
-	 * 
-	 * @param boolean
-	 *            true for longest word and false for shortest word
-	 * @return Map<Integer,String> with the longest length and the corresponding
-	 *         words
-	 */
-	public Map<Integer, String> longestWord() {
-		// group unique words according to their length
-		Map<Integer, String> lengthMap = text.parallelStream().distinct()
-				.collect(Collectors.toMap(String::length, Function.identity(), (s, k) -> s + "\\" + k));
-
-
-		// find the longest key
-		int length = lengthMap.keySet().stream().max(Integer::compareTo).get();
-
-		// find the words with the calculated length
-		String stringLength = lengthMap.get(length);
-		stringLength = stringLength.replaceAll("\\W\\d+", "");
-
-		// store the two results in a map
-		Map<Integer, String> result = new HashMap<>();
-		result.put(length, stringLength);
-
-		return result;
-	}
-
-	/**
-	 * Counts sentences that are delimited by a full stop (".")
-	 * 
-	 * @return number of sentences
-	 */
-	public int countSentences() {
-		// return (int) text.stream().filter((x) -> x.endsWith(".")).count();
-		return (int) text.stream().filter((x) -> x.matches("\\w.|\\w?|\\w!")).count();
-	}
-	
-
-	/**
-	 * Finds all words with the specified length.
-	 * 
-	 * @param length
-	 *            int
-	 * @return List of words in the specified length
-	 */
-	public List<String> findWordsOfLength(int length) {
-		return text.stream().filter((x) -> x.length() == length).collect(Collectors.toList());
-	}
-
+	@Override
 	public List<String> getText() {
 		return text;
 	}

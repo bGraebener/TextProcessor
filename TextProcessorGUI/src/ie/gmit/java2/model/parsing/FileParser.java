@@ -13,7 +13,7 @@ import java.io.*;
 //DONE add regex
 
 /**
- * Helper class to parse text from a file. Sets the source path and the file
+ * Helper class to parse text from a file. Takes a File object and Sets the file
  * specific buffered Reader in the abstract super class.
  * 
  * @author Basti
