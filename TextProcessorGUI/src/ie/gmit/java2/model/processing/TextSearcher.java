@@ -21,7 +21,6 @@ import java.util.function.BiPredicate;
  * parsed text as a List<> in the constructor.
  * 
  * @author Basti
- *
  */
 public class TextSearcher implements Processor{
 
@@ -67,7 +66,7 @@ public class TextSearcher implements Processor{
 	public boolean contains(String s, BiPredicate<String, String> biPred) {
 		// retrieve a stream from the text list,
 		// filter elements that don't satisfy the BiPredicate and check if
-		// there's more than one
+		// there's at least one.
 		return text.stream().filter((x) -> biPred.test(x, s)).count() > 0;
 	}
 
@@ -77,29 +76,27 @@ public class TextSearcher implements Processor{
 	 * @param s
 	 *            String to check for
 	 * @param pred
-	 *            BiPredicate to set whether to search case sensitive or to use
+	 *            BiPredicate to set whether to search case sensitively or to use
 	 *            startsWith/endWith
 	 * @return the number of occurrences of String s
 	 */
 	public int countOccurences(String s, BiPredicate<String, String> biPred) {
-	
 		// retrieve a stream from the text list, filter elements that don't
 		// satisfy the BiPredicate and count the result
-		return (int) text.parallelStream().filter((x) -> biPred.test(x, s)).count();
+		return (int) text.parallelStream().unordered().filter((x) -> biPred.test(x, s)).count();
 	}
 
 	/**
-	 * Finds first match in the text.
+	 * Finds the first match in the text.
 	 * 
 	 * @param s
 	 *            String to look for in the text
 	 * @param biPred
-	 *            Define a BiPredicate whether the search should be case
-	 *            sensitive or to use startsWith/endWith
+	 *            BiPredicate whether the search should be case
+	 *            sensitively or to use startsWith/endWith
 	 * @return index of first match or -1 if no match found
 	 */
 	public int getFirstIndex(String s, BiPredicate<String, String> biPred) {
-	
 		// iterate over the list and return the index of the first element that
 		// satisfies the BiPredicate
 		// return -1 if no element is found
@@ -122,7 +119,6 @@ public class TextSearcher implements Processor{
 	 * @return index of last match or -1 if no match found
 	 */
 	public int getLastIndex(String s, BiPredicate<String, String> biPred) {
-	
 		// iterate over list backwards and return index of first element to
 		// satisfy the BiPredicate
 		// return -1 if no element is found
@@ -135,7 +131,7 @@ public class TextSearcher implements Processor{
 	}
 
 	/**
-	 * This methods records all indices of occurrences of String s by iterating
+	 * This methods records all indices of occurrences of a String by iterating
 	 * over the text.
 	 * 
 	 * @param s
@@ -166,7 +162,7 @@ public class TextSearcher implements Processor{
 	}
 
 	/**
-	 * Deletes elements at index
+	 * Deletes elements at an index.
 	 * 
 	 * @param index
 	 *            index of element to delete
@@ -180,7 +176,7 @@ public class TextSearcher implements Processor{
 	}
 
 	/**
-	 * Deletes all Strings that satisfy the BiPredicate.
+	 * Deletes all String elements that satisfy the BiPredicate.
 	 * 
 	 * @param string
 	 *            element to delete
@@ -201,10 +197,4 @@ public class TextSearcher implements Processor{
 		}
 		return deleted;
 	}
-	
-	@Override
-	public List<String> getText() {
-		return text;
-	}
-
 }

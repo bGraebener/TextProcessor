@@ -25,7 +25,6 @@ import javafx.stage.FileChooser;
  * Handler.
  * 
  * @author Basti
- *
  */
 public class MainWindowController {
 
@@ -198,6 +197,8 @@ public class MainWindowController {
 		handler.showText();
 	}
 
+	
+	//getters for the checkboxes
 	public boolean caseIsSelected() {
 		return caseCheckBox.isSelected();
 	}
