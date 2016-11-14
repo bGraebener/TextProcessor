@@ -7,13 +7,14 @@ package ie.gmit.java2.model;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.List;
 import java.util.function.BiPredicate;
 
 import ie.gmit.java2.controller.MainWindowController;
 import ie.gmit.java2.controller.TextViewController;
-import ie.gmit.java2.model.parsing.*;
-import ie.gmit.java2.model.processing.*;
+import ie.gmit.java2.model.processing.Processor;
+import ie.gmit.java2.model.processing.TextAnalyser;
+import ie.gmit.java2.model.processing.TextSearcher;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -23,7 +24,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 //DONE implement stats method 
-//TODO Comments
+//DONE Comments
 
 /**
  * Class that retrieves the results from the users query and passes it back to
@@ -37,13 +38,16 @@ public class Handler {
 
 	private List<String> text;
 	private BiPredicate<String, String> caseSensitive, startsWith, endsWith, combined;
-	private MainWindowController mwc;
-	private Processor analyser, searcher;
 	private StringBuilder statsAsString;
-
 	private Alert alert;
 
+	private MainWindowController mwc;
+	private Processor analyser, searcher;
+	
+	
 	public Handler(MainWindowController mwc) {
+		// get an instance of the controller to get access to the checkboxes and
+		// set the BiPredicates accordingly to the users choice  
 		this.mwc = mwc;
 		statsAsString = new StringBuilder();
 
@@ -66,7 +70,7 @@ public class Handler {
 	 */
 	public void parse(URL source) {
 
-		Parseable urlParser = new Parser(source);
+		Parser urlParser = new Parser(source);
 		text = urlParser.parse();
 
 		alert.setContentText("Text parsed!");
@@ -83,7 +87,7 @@ public class Handler {
 	 */
 	public void parse(File source) {
 
-		Parseable fileParser = new Parser(source);
+		Parser fileParser = new Parser(source);
 		text = fileParser.parse();
 
 		alert.setContentText("Text parsed!");
@@ -175,12 +179,11 @@ public class Handler {
 	 */
 	public void showText() {
 
-		TextSearcher searcher;
-		TextAnalyser analyser;
 		if (text == null || text.isEmpty()) {
 			return;
 		}
-		searcher = new TextSearcher(text);
+		
+		TextAnalyser analyser;
 		analyser = new TextAnalyser(text);
 
 		// open the TextView Window
@@ -189,7 +192,7 @@ public class Handler {
 			AnchorPane textViewPane = textViewLoader.load();
 
 			TextViewController textViewController = textViewLoader.getController();
-			textViewController.setText(searcher.getText(), analyser.count());
+			textViewController.setText(text, analyser.count());
 
 			Scene textViewScene = new Scene(textViewPane);
 
@@ -212,7 +215,6 @@ public class Handler {
 	public String clearText() {
 		statsAsString = new StringBuilder();
 		return statsAsString.toString();
-
 	}
 
 	/**

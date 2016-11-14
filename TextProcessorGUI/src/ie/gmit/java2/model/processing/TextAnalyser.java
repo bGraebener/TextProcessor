@@ -14,6 +14,7 @@ public class TextAnalyser implements Processor {
 	private List<String> text;
 
 	public TextAnalyser(List<String> text) {
+		// shallow copy of text, points to the Handlers List object
 		this.text = text;
 	}
 
@@ -147,10 +148,4 @@ public class TextAnalyser implements Processor {
 	public List<String> findWordsOfLength(int length) {
 		return text.stream().filter((x) -> x.length() == length).collect(Collectors.toList());
 	}
-
-	@Override
-	public List<String> getText() {
-		return text;
-	}
-
 }
