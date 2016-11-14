@@ -4,50 +4,91 @@
 
 package ie.gmit.java2.model.parsing;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
- * Abstract superclass for all classes responsible for parsing text. The
- * subclasses only responsibility is to set the BuffererdReader with the
- * suitable arguments for the source type.
+ * Class that is responsible for parsing text. The Class uses a BuffererdReader with the
+ * suitable arguments for the source type to retrieve text from the specified source.
  * 
  * @author Basti
  *
  */
-public abstract class Parser implements Parseable {
+public class Parser implements Parseable {
 
 	private BufferedReader reader;
 
 	/**
-	 * Method that tries to retrieve text from the specified source. It stores
-	 * the found Strings in a List<String>.  
+	 * Constructor that takes a File as a source and initialises the BufferedReader
+	 * to take a FileReader.
 	 * 
-	 * @return The list of Strings retrieved
+	 * @param source
+	 */
+	public Parser(File source) {
+		if (!source.exists() || !source.canRead()) {
+			throw new IllegalArgumentException("Invalid file");
+		}
+
+		try {
+			reader = new BufferedReader(new FileReader(source));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Constructor that takes an URL as a source and initialises the BufferedReader
+	 * to take an InputStreamReader with the URL's InputStream.  
+	 * @param source
+	 */
+	public Parser(URL source) {
+		try {
+			reader = new BufferedReader(new InputStreamReader(source.openStream()));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Method that tries to retrieve text from the specified source. It stores
+	 * the found Strings in a List<String>.
+	 * 
+	 * @return A new list of Strings retrieved from the source, null if the BufferedReader is not set
 	 */
 	@Override
 	public List<String> parse() {
 
 		if (reader == null) {
-			throw new IllegalArgumentException();
+			return null;
 		}
 
-		List<String> listOfines = new ArrayList<>();
+		List<String> listOfLines = new ArrayList<>();
 		List<String> listOfWords = new ArrayList<>();
 		String wordsArray[];
 
 		try {
 
+			//retrieve a list of lines from the source text
 			String b = null;
 			while ((b = reader.readLine()) != null) {
-				listOfines.add(b);
+				listOfLines.add(b);
 			}
 
-			for (int i = 0; i < listOfines.size(); i++) {
-				wordsArray = listOfines.get(i).replaceAll("[-,;\"]", " ").split("\\s+");
+			//retrieve a list of words from the list of lines
+			for (int i = 0; i < listOfLines.size(); i++) {
+				wordsArray = listOfLines.get(i).replaceAll("[-,;\"]", " ").split("\\s+");
 				listOfWords.addAll(Arrays.asList(wordsArray));
 			}
 
+			//cleaning up the list of words
 			for (int i = 0; i < listOfWords.size(); i++) {
 				if (listOfWords.get(i).equals(" ") || listOfWords.get(i).isEmpty()) {
 					listOfWords.remove(i);
@@ -60,15 +101,6 @@ public abstract class Parser implements Parseable {
 		}
 
 		return new ArrayList<String>(listOfWords);
-	}
-
-
-	public final BufferedReader getReader() {
-		return reader;
-	}
-
-	public final void setReader(BufferedReader reader) {
-		this.reader = reader;
 	}
 
 }

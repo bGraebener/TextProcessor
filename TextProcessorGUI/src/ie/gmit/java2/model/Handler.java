@@ -46,8 +46,8 @@ public class Handler {
 	public Handler(MainWindowController mwc) {
 		this.mwc = mwc;
 		statsAsString = new StringBuilder();
-		
-		// intialise BiPredicates
+
+		// initialise BiPredicates
 		startsWith = String::startsWith;
 		endsWith = String::endsWith;
 
@@ -58,26 +58,32 @@ public class Handler {
 
 	/**
 	 * Method that attempts to parse the text from the specified source by
-	 * calling the appropriate method from the FileParser class. Gets called by
-	 * the parse event handler of the Controller.
+	 * calling the appropriate method from the Parser class. Gets called by the
+	 * parse event handler of the Controller.
 	 * 
-	 * @param sourcePath
-	 *            the path of the text source
-	 * @param sourceType
-	 *            the type of the source
+	 * @param source
+	 *            the URL of the text source
 	 */
 	public void parse(URL source) {
 
-		Parseable urlParser = new UrlParser(source);
+		Parseable urlParser = new Parser(source);
 		text = urlParser.parse();
 
 		alert.setContentText("Text parsed!");
 		alert.show();
 	}
 
+	/**
+	 * Method that attempts to parse the text from the specified source by
+	 * calling the appropriate method from the Parser class. Gets called by the
+	 * parse event handler of the Controller.
+	 * 
+	 * @param source
+	 *            the text source File
+	 */
 	public void parse(File source) {
 
-		Parseable fileParser = new FileParser(source);
+		Parseable fileParser = new Parser(source);
 		text = fileParser.parse();
 
 		alert.setContentText("Text parsed!");
@@ -96,14 +102,12 @@ public class Handler {
 
 		setOptions();
 
-		if (!text.isEmpty()) {
+		if (!text.isEmpty() || text != null) {
 			searcher = new TextSearcher(text);
 			return searcher.process(userInput, combined);
-		}else{
+		} else {
 			return "No text found";
 		}
-
-
 	}
 
 	/**
@@ -113,11 +117,11 @@ public class Handler {
 	 * @return The results of the stats operations as a String.
 	 */
 	public String getStats() {
-		
-		if (!text.isEmpty()) {
+
+		if (!text.isEmpty() || text != null) {
 			analyser = new TextAnalyser(text);
 			return analyser.process(null, combined);
-		}else{
+		} else {
 			return "No text found";
 		}
 	}
@@ -178,7 +182,7 @@ public class Handler {
 		}
 		searcher = new TextSearcher(text);
 		analyser = new TextAnalyser(text);
-		
+
 		// open the TextView Window
 		try {
 			FXMLLoader textViewLoader = new FXMLLoader(getClass().getResource("/ie/gmit/java2/view/TextView.fxml"));

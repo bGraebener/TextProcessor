@@ -26,7 +26,7 @@ public class TextAnalyser implements Processor {
 		double averageWordLength = averageWordLength();
 		int numOfSentences = countSentences();
 
-		// skip mostUsedMethod if text size is greater than 10,000 because of
+		// skip mostUsedMethod if text size is greater than 10,000 because of long
 		// runtime
 		String mostUsed = elementsCount > 10_000 ? "Most used word: Skipped due to large text size!\n"
 				: getMostUsedWord();
@@ -71,12 +71,20 @@ public class TextAnalyser implements Processor {
 		int counter = 0;
 		Map<Integer, String> mapOfOccurences = new HashMap<>();
 
+		//map strings to their no. of occurrences
 		for (int i = 0; i < text.size(); i++) {
 			counter = searcher.countOccurences(text.get(i), String::equalsIgnoreCase);
 			mapOfOccurences.put(counter, text.get(i));
 		}
-
+		
+		//find the largest key
 		int max = mapOfOccurences.keySet().stream().max(Integer::compareTo).get();
+		
+		//if the largest key is one, there is no most used word
+		if(max == 1){
+			return "No most used word!";
+		}
+		
 		return mapOfOccurences.get(max);
 
 	}
@@ -87,7 +95,7 @@ public class TextAnalyser implements Processor {
 	 * @return the average length or -1 if no average could be calculated
 	 */
 	public double averageWordLength() {
-		return text.parallelStream().mapToDouble(String::length).average().orElse(-1);
+		return text.parallelStream().unordered().mapToDouble(String::length).average().orElse(-1);
 	}
 
 	/**
@@ -99,14 +107,16 @@ public class TextAnalyser implements Processor {
 	 *         words
 	 */
 	public Map<Integer, String> longestWord() {
+		
 		// group unique words according to their length
-		Map<Integer, String> lengthMap = text.parallelStream().distinct()
+		Map<Integer, String> lengthMap = text.parallelStream().unordered().distinct().filter((x) -> !x.endsWith("."))
 				.collect(Collectors.toMap(String::length, Function.identity(), (s, k) -> s + "\\" + k));
 
+		
 		// find the longest key
 		int length = lengthMap.keySet().stream().max(Integer::compareTo).get();
 
-		// find the words with the calculated length
+		// find the words with the calculated length, delete digits
 		String stringLength = lengthMap.get(length);
 		stringLength = stringLength.replaceAll("\\W\\d+", "");
 
@@ -118,7 +128,7 @@ public class TextAnalyser implements Processor {
 	}
 
 	/**
-	 * Counts sentences that are delimited by a full stop (".")
+	 * Counts sentences that are delimited by a full stop (".", "?" or "!")
 	 * 
 	 * @return number of sentences
 	 */

@@ -44,6 +44,10 @@ public class MainWindowController {
 
 	private Handler handler;
 
+	/**
+	 * Method that gets called before the Window is opened. Used to initialise the Handler class, and attaches
+	 * listeners to the checkboxes.
+	 */
 	@FXML
 	private void initialize() {
 
@@ -53,7 +57,7 @@ public class MainWindowController {
 		alert = new Alert(AlertType.WARNING);
 		alert.setHeaderText(null);
 
-		// Automatically uncheck and disable case-sensitive option if one of
+		// Automatically un-check and disable case-sensitive option if one of
 		// the two others is selected.
 		startsWithCheckBox.selectedProperty().addListener((x) -> {
 			if (caseCheckBox.isDisabled() && !endsWithCheckBox.isSelected()) {
@@ -149,6 +153,9 @@ public class MainWindowController {
 		textArea.setText(statsResults);
 	}
 
+	/**
+	 * Event handler for the "Show Stats" button. 
+	 */
 	@FXML
 	private void showStats() {
 
@@ -171,7 +178,6 @@ public class MainWindowController {
 			alert.show();
 			return;
 		}
-
 		handler.delete(deleteTextField.getText());
 	}
 
