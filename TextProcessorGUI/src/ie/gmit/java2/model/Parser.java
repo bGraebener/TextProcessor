@@ -4,17 +4,10 @@
 
 package ie.gmit.java2.model;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -55,7 +48,7 @@ public class Parser {
 	 */
 	public Parser(URL source) {
 		try {
-			reader = new BufferedReader(new InputStreamReader(source.openStream()));
+			reader = new BufferedReader(new InputStreamReader(source.openStream(), StandardCharsets.UTF_8));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -74,22 +67,22 @@ public class Parser {
 			return null;
 		}
 
-		// retrieve a list of lines from the source text
+		// retrieve a list of lines from the source
 		List<String> listOfLines = reader.lines().collect(Collectors.toList());
 		
+		listOfLines.replaceAll((i) -> i.replaceAll("[-;\"]", " "));
 		
 		// retrieve a list of words from the list of lines
 		List<String> listOfWords = new ArrayList<>();
 		String wordsArray[];
-		for (int i = 0; i < listOfLines.size(); i++) {
-			wordsArray = listOfLines.get(i).replaceAll("[-,;\"]", " ").split("\\s+");
+		
+		for (String line : listOfLines) {
+			wordsArray = line.split("\\s+");
 			listOfWords.addAll(Arrays.asList(wordsArray));
 		}
 
-		
-		// cleaning up the list of words
+		// clean up the list of words
 		listOfWords.removeIf((i) -> i.equals(" ") || i.isEmpty());
-		
 
 		return new ArrayList<String>(listOfWords);
 	}
