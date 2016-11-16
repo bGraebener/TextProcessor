@@ -6,14 +6,16 @@ package ie.gmit.java2.model;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Class that is responsible for parsing text. The Class uses a BuffererdReader
@@ -39,7 +41,7 @@ public class Parser {
 		}
 
 		try {
-			reader = new BufferedReader(new FileReader(source));
+			reader = new BufferedReader(new InputStreamReader(new FileInputStream(source), StandardCharsets.UTF_8));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -72,35 +74,22 @@ public class Parser {
 			return null;
 		}
 
-		List<String> listOfLines = new ArrayList<>();
+		// retrieve a list of lines from the source text
+		List<String> listOfLines = reader.lines().collect(Collectors.toList());
+		
+		
+		// retrieve a list of words from the list of lines
 		List<String> listOfWords = new ArrayList<>();
 		String wordsArray[];
-
-		try {
-
-			// retrieve a list of lines from the source text
-			String b = null;
-			while ((b = reader.readLine()) != null) {
-				listOfLines.add(b);
-			}
-
-			// retrieve a list of words from the list of lines
-			for (int i = 0; i < listOfLines.size(); i++) {
-				wordsArray = listOfLines.get(i).replaceAll("[-,;\"]", " ").split("\\s+");
-				listOfWords.addAll(Arrays.asList(wordsArray));
-			}
-
-			// cleaning up the list of words
-			for (int i = 0; i < listOfWords.size(); i++) {
-				if (listOfWords.get(i).equals(" ") || listOfWords.get(i).isEmpty()) {
-					listOfWords.remove(i);
-					i--;
-				}
-			}
-
-		} catch (IOException e) {
-			e.printStackTrace();
+		for (int i = 0; i < listOfLines.size(); i++) {
+			wordsArray = listOfLines.get(i).replaceAll("[-,;\"]", " ").split("\\s+");
+			listOfWords.addAll(Arrays.asList(wordsArray));
 		}
+
+		
+		// cleaning up the list of words
+		listOfWords.removeIf((i) -> i.equals(" ") || i.isEmpty());
+		
 
 		return new ArrayList<String>(listOfWords);
 	}
