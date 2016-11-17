@@ -35,7 +35,7 @@ public class MainWindowController {
 	@FXML
 	private Button searchButton, deleteButton;
 	@FXML
-	private CheckBox caseCheckBox, startsWithCheckBox, endsWithCheckBox;
+	private CheckBox caseCheckBox, startsWithCheckBox, endsWithCheckBox, substringCheckbox;
 	@FXML
 	private TextArea textArea;
 
@@ -196,19 +196,31 @@ public class MainWindowController {
 	private void showText() {
 		handler.showText();
 	}
+	
+	/**
+	 * Event handler for the 'Save Stats' - Button. Delegates to the Handlers' saveStats method()
+	 */
+	@FXML
+	private void saveStats(){
+		handler.saveStats();
+	}
 
 	
 	//getters for the checkboxes
-	public boolean caseIsSelected() {
+	public final boolean caseIsSelected() {
 		return caseCheckBox.isSelected();
 	}
 
-	public boolean startsIsSelected() {
+	public final boolean startsIsSelected() {
 		return startsWithCheckBox.isSelected();
 	}
 
-	public boolean endsIsSelected() {
+	public final boolean endsIsSelected() {
 		return endsWithCheckBox.isSelected();
+	}
+
+	public final boolean substringSelected() {
+		return substringCheckbox.isSelected();
 	}
 
 }

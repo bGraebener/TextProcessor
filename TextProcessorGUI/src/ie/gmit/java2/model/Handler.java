@@ -4,8 +4,7 @@
 
 package ie.gmit.java2.model;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.util.List;
 import java.util.function.BiPredicate;
@@ -20,8 +19,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
+import javafx.stage.*;
 
 //DONE implement stats method 
 //DONE Comments
@@ -43,11 +41,10 @@ public class Handler {
 
 	private MainWindowController mwc;
 	private Processor analyser, searcher;
-	
-	
+
 	public Handler(MainWindowController mwc) {
 		// get an instance of the controller to get access to the checkboxes and
-		// set the BiPredicates accordingly to the users choice  
+		// set the BiPredicates accordingly to the users choice
 		this.mwc = mwc;
 		statsAsString = new StringBuilder();
 
@@ -182,7 +179,7 @@ public class Handler {
 		if (text == null || text.isEmpty()) {
 			return;
 		}
-		
+
 		TextAnalyser analyser;
 		analyser = new TextAnalyser(text);
 
@@ -233,9 +230,39 @@ public class Handler {
 			}
 		} else if (mwc.endsIsSelected()) {
 			combined = endsWith;
-		} else {
+		} else if (mwc.substringSelected()){
+			combined = String::contains;
+		}else {
 			combined = caseSensitive;
 		}
+	}
+
+	/**
+	 * Method to save the current statistics for the text to a file.
+	 */
+	public void saveStats() {
+		
+		if(text == null || text.isEmpty()){
+			alert.setContentText("No text chosen!");
+			alert.show();
+			return;
+		}
+
+		FileChooser fc = new FileChooser();
+		File saveFile = fc.showSaveDialog(null);
+		
+		if(saveFile == null){
+			return;
+		}
+
+		try (BufferedWriter out = new BufferedWriter(new PrintWriter(saveFile))) {
+
+			out.write(getStats());
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 }

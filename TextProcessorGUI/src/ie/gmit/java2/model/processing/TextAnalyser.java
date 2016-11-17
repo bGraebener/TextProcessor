@@ -127,7 +127,7 @@ public class TextAnalyser implements Processor {
 
 		return result;
 	}
-
+	
 	/**
 	 * Counts sentences that are delimited by a full stop (".", "?" or "!")
 	 * 

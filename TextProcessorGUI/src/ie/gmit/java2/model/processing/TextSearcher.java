@@ -22,7 +22,7 @@ import java.util.function.BiPredicate;
  * 
  * @author Basti
  */
-public class TextSearcher implements Processor{
+public class TextSearcher implements Processor {
 
 	private List<String> text;
 
@@ -33,10 +33,10 @@ public class TextSearcher implements Processor{
 	}
 
 	@Override
-	public String process(String userInput, BiPredicate<String,String> combined) {
-		
+	public String process(String userInput, BiPredicate<String, String> combined) {
+
 		StringBuilder statsAsString = new StringBuilder();
-		
+
 		boolean containsUserInput = contains(userInput, combined);
 		int firstIndexOf = getFirstIndex(userInput, combined);
 		int lastIndexOf = getLastIndex(userInput, combined);
@@ -70,14 +70,15 @@ public class TextSearcher implements Processor{
 		return text.stream().filter((x) -> biPred.test(x, s)).count() > 0;
 	}
 
+
 	/**
 	 * Returns number of occurrences of a String in the text
 	 * 
 	 * @param s
 	 *            String to check for
 	 * @param pred
-	 *            BiPredicate to set whether to search case sensitively or to use
-	 *            startsWith/endWith
+	 *            BiPredicate to set whether to search case sensitively or to
+	 *            use startsWith/endWith
 	 * @return the number of occurrences of String s
 	 */
 	public int countOccurences(String s, BiPredicate<String, String> biPred) {
@@ -92,8 +93,8 @@ public class TextSearcher implements Processor{
 	 * @param s
 	 *            String to look for in the text
 	 * @param biPred
-	 *            BiPredicate whether the search should be case
-	 *            sensitively or to use startsWith/endWith
+	 *            BiPredicate whether the search should be case sensitively or
+	 *            to use startsWith/endWith
 	 * @return index of first match or -1 if no match found
 	 */
 	public int getFirstIndex(String s, BiPredicate<String, String> biPred) {
@@ -143,16 +144,16 @@ public class TextSearcher implements Processor{
 	 *         no occurrences found
 	 */
 	public int[] getAllIndeces(String s, BiPredicate<String, String> biPred) {
-	
+
 		int count = countOccurences(s, biPred);
-	
+
 		if (count == 0) {
 			return null;
 		}
-	
+
 		int[] allIndeces = new int[count];
 		int i = 0;
-	
+
 		for (int j = 0; j < text.size(); j++) {
 			if (biPred.test(text.get(j), s)) {
 				allIndeces[i++] = j;
@@ -187,7 +188,7 @@ public class TextSearcher implements Processor{
 	 */
 	public int delete(String string, BiPredicate<String, String> biPred) {
 		int deleted = 0;
-	
+
 		for (int i = 0; i < text.size(); i++) {
 			if (biPred.test(text.get(i), string)) {
 				text.remove(i);
