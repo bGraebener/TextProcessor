@@ -101,9 +101,8 @@ public class Handler {
 	 */
 	public String searchForString(String userInput) {
 
-		setOptions();
-
 		if (!text.isEmpty() || text != null) {
+			setOptions();
 			searcher = new TextSearcher(text);
 			return searcher.process(userInput, combined);
 		} else {
@@ -151,6 +150,7 @@ public class Handler {
 				isInt = true;
 			} else {
 				isInt = false;
+				break;
 			}
 		}
 
@@ -215,6 +215,34 @@ public class Handler {
 	}
 
 	/**
+	 * Method to save the current statistics for the text to a file.
+	 */
+	public void saveStats() {
+		
+		if(text == null || text.isEmpty()){
+			alert.setContentText("No text chosen!");
+			alert.show();
+			return;
+		}
+	
+		FileChooser fc = new FileChooser();
+		File saveFile = fc.showSaveDialog(null);
+		
+		if(saveFile == null){
+			return;
+		}
+	
+		try (BufferedWriter out = new BufferedWriter(new PrintWriter(saveFile))) {
+	
+			out.write(getStats());
+	
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	
+	}
+
+	/**
 	 * Sets the BiPredicats according to the settings chosen by the user. The
 	 * case-sensitive option can only be chosen if the startsWith and endsWith
 	 * options are disabled.
@@ -235,34 +263,6 @@ public class Handler {
 		}else {
 			combined = caseSensitive;
 		}
-	}
-
-	/**
-	 * Method to save the current statistics for the text to a file.
-	 */
-	public void saveStats() {
-		
-		if(text == null || text.isEmpty()){
-			alert.setContentText("No text chosen!");
-			alert.show();
-			return;
-		}
-
-		FileChooser fc = new FileChooser();
-		File saveFile = fc.showSaveDialog(null);
-		
-		if(saveFile == null){
-			return;
-		}
-
-		try (BufferedWriter out = new BufferedWriter(new PrintWriter(saveFile))) {
-
-			out.write(getStats());
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
 	}
 
 }
