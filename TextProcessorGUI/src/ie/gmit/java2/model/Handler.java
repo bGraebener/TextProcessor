@@ -11,6 +11,8 @@ import java.util.function.BiPredicate;
 
 import ie.gmit.java2.controller.MainWindowController;
 import ie.gmit.java2.controller.TextViewController;
+import ie.gmit.java2.model.parsers.Parser;
+import ie.gmit.java2.model.parsers.Parsers;
 import ie.gmit.java2.model.processing.Processor;
 import ie.gmit.java2.model.processing.TextAnalyser;
 import ie.gmit.java2.model.processing.TextSearcher;
@@ -44,7 +46,7 @@ public class Handler {
 
 	public Handler(MainWindowController mwc) {
 		// get an instance of the controller to get access to the checkboxes and
-		// set the BiPredicates accordingly to the users choice
+		// set the BiPredicates according to the users choice
 		this.mwc = mwc;
 		statsAsString = new StringBuilder();
 
@@ -67,7 +69,7 @@ public class Handler {
 	 */
 	public void parse(URL source) {
 
-		Parser urlParser = new Parser(source);
+		Parser urlParser = Parsers.getUrlParser(source);
 		text = urlParser.parse();
 
 		alert.setContentText("Text parsed!");
@@ -84,7 +86,7 @@ public class Handler {
 	 */
 	public void parse(File source) {
 
-		Parser fileParser = new Parser(source);
+		Parser fileParser = Parsers.getFileParser(source.toPath());
 		text = fileParser.parse();
 
 		alert.setContentText("Text parsed!");

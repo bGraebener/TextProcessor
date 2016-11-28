@@ -2,12 +2,12 @@
 	Created by Basti on 07.11.2016
 */
 
-package ie.gmit.java2.model;
+package ie.gmit.java2.model.parsers;
 
-import java.io.*;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.io.BufferedReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -18,41 +18,9 @@ import java.util.stream.Collectors;
  * @author Basti
  *
  */
-public class Parser {
+public abstract class Parser {
 
-	private BufferedReader reader;
-
-	/**
-	 * Constructor that takes a File as a source and initialises the
-	 * BufferedReader to take a FileReader.
-	 * 
-	 * @param source
-	 */
-	public Parser(File source) {
-		if (!source.exists() || !source.canRead()) {
-			throw new IllegalArgumentException("Invalid file");
-		}
-
-		try {
-			reader = new BufferedReader(new InputStreamReader(new FileInputStream(source), StandardCharsets.UTF_8));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Constructor that takes an URL as a source and initialises the
-	 * BufferedReader to take an InputStreamReader with the URL's InputStream.
-	 * 
-	 * @param source
-	 */
-	public Parser(URL source) {
-		try {
-			reader = new BufferedReader(new InputStreamReader(source.openStream(), StandardCharsets.UTF_8));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+	protected BufferedReader reader;
 
 	/**
 	 * Method that tries to retrieve text from the specified source. It stores

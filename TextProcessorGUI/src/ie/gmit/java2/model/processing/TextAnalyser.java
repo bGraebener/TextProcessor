@@ -9,6 +9,12 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Class that is used to analyse a provided text. Implements the Processor interface,  
+ * 
+ * @author Basti
+ *
+ */
 public class TextAnalyser implements Processor {
 
 	private List<String> text;
@@ -28,9 +34,8 @@ public class TextAnalyser implements Processor {
 		int numOfSentences = countSentences();
 
 		// skip mostUsedMethod if text size is greater than 10,000 because of
-		// long
-		// runtime
-		String mostUsed = elementsCount > 100_000 ? "Most used word: Skipped due to large text size!\n"
+		// long runtime
+		String mostUsed = elementsCount > 100_000 ? "Most used word: Search skipped due to large text size!\n"
 				: getMostUsedWord();
 
 		int mostUsedAmount = new TextSearcher(text).countOccurences(mostUsed, String::equalsIgnoreCase);
@@ -91,12 +96,7 @@ public class TextAnalyser implements Processor {
 			return "No most used word!";
 		}
 
-		// text.forEach(System.out::print);
-		System.out.println(distinctWords.size());
-
-		System.out.println(max);
 		return mapOfOccurences.get(max);
-
 	}
 
 	/**
@@ -111,8 +111,6 @@ public class TextAnalyser implements Processor {
 	/**
 	 * Finds the longest word or words and their length
 	 * 
-	 * @param boolean
-	 *            true for longest word and false for shortest word
 	 * @return Map<Integer,String> with the longest length and the corresponding
 	 *         words
 	 */
@@ -126,12 +124,12 @@ public class TextAnalyser implements Processor {
 		int longestKey = lengthMap.keySet().stream().max(Integer::compareTo).get();
 
 		// find the words with the calculated length, delete digits
-		String stringLength = lengthMap.get(longestKey);
-		stringLength = stringLength.replaceAll("\\W\\d+", "");
+		String longestString = lengthMap.get(longestKey);
+		longestString = longestString.replaceAll("\\W\\d+", "");
 
 		// store the two results in a map
 		Map<Integer, String> result = new HashMap<>();
-		result.put(longestKey, stringLength);
+		result.put(longestKey, longestString);
 
 		return new HashMap<Integer, String>(result);
 	}
@@ -142,7 +140,6 @@ public class TextAnalyser implements Processor {
 	 * @return number of sentences
 	 */
 	public int countSentences() {
-		// return (int) text.stream().filter((x) -> x.endsWith(".")).count();
 		return (int) text.stream().filter((x) -> x.matches("\\w.|\\w?|\\w!")).count();
 	}
 
