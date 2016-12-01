@@ -6,8 +6,6 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
-//DONE set title
-//DONE set non-resizable 
 
 public class Main extends Application {
 	@Override

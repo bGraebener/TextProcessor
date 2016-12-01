@@ -23,8 +23,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.*;
 
-//DONE implement stats method 
-//DONE Comments
 
 /**
  * Class that retrieves the results from the users query and passes it back to
@@ -69,7 +67,7 @@ public class Handler {
 	 */
 	public void parse(URL source) {
 
-		Parser urlParser = Parsers.getUrlParser(source);
+		Parser urlParser = Parsers.getParser(source);
 		text = urlParser.parse();
 
 		alert.setContentText("Text parsed!");
@@ -86,7 +84,7 @@ public class Handler {
 	 */
 	public void parse(File source) {
 
-		Parser fileParser = Parsers.getFileParser(source.toPath());
+		Parser fileParser = Parsers.getParser(source);
 		text = fileParser.parse();
 
 		alert.setContentText("Text parsed!");

@@ -20,7 +20,7 @@ public interface Processor {
 	 *            String input by the user.  
 	 * @param combined
 	 *            BiPredicate that can be used to set search options like
-	 *            startsWith/endsWith and case sensitivity
+	 *            startsWith/endsWith, substring and case sensitivity
 	 * @return A String that represents the result of the processing operation
 	 */
 	String process(String userInput, BiPredicate<String, String> combined);

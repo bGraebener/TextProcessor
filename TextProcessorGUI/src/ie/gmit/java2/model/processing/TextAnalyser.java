@@ -71,7 +71,7 @@ public class TextAnalyser implements Processor {
 	 * 
 	 * @return The word with the highest frequency
 	 */
-	public String getMostUsedWord() {
+	private String getMostUsedWord() {
 
 		TextSearcher searcher = new TextSearcher(text);
 
@@ -104,7 +104,7 @@ public class TextAnalyser implements Processor {
 	 * 
 	 * @return the average length or -1 if no average could be calculated
 	 */
-	public double averageWordLength() {
+	private double averageWordLength() {
 		return text.parallelStream().unordered().mapToDouble(String::length).average().orElse(-1);
 	}
 
@@ -114,7 +114,7 @@ public class TextAnalyser implements Processor {
 	 * @return Map<Integer,String> with the longest length and the corresponding
 	 *         words
 	 */
-	public Map<Integer, String> longestWord() {
+	private Map<Integer, String> longestWord() {
 
 		// group unique words according to their length
 		Map<Integer, String> lengthMap = text.parallelStream().unordered().distinct().filter((x) -> !x.endsWith("."))
@@ -139,7 +139,7 @@ public class TextAnalyser implements Processor {
 	 * 
 	 * @return number of sentences
 	 */
-	public int countSentences() {
+	private int countSentences() {
 		return (int) text.stream().filter((x) -> x.matches("\\w.|\\w?|\\w!")).count();
 	}
 
@@ -150,7 +150,7 @@ public class TextAnalyser implements Processor {
 	 *            int
 	 * @return List of words in the specified length
 	 */
-	public List<String> findWordsOfLength(int length) {
+	private List<String> findWordsOfLength(int length) {
 		return text.stream().filter((x) -> x.length() == length).collect(Collectors.toList());
 	}
 }

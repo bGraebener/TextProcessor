@@ -8,13 +8,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiPredicate;
 
-//XXX delete case sensitive
-//XXX delete startsWith/endsWith
-//DONE method to find out the most used word
-//DONE implement stats methods, i.e. average length of word, longest/shortest word
-//TODO add regex to methods
-//XXX average no of words in a sentence 
-//TODO show words startWith/endWith ?
 
 /**
  * Class to process the text gathered by the Parser. Takes an instance of the
@@ -63,7 +56,7 @@ public class TextSearcher implements Processor {
 	 *            startsWith/endWith
 	 * @return whether the text contains the String
 	 */
-	public boolean contains(String s, BiPredicate<String, String> biPred) {
+	private boolean contains(String s, BiPredicate<String, String> biPred) {
 		// retrieve a stream from the text list,
 		// filter elements that don't satisfy the BiPredicate and check if
 		// there's at least one.
@@ -97,7 +90,7 @@ public class TextSearcher implements Processor {
 	 *            to use startsWith/endWith
 	 * @return index of first match or -1 if no match found
 	 */
-	public int getFirstIndex(String s, BiPredicate<String, String> biPred) {
+	private int getFirstIndex(String s, BiPredicate<String, String> biPred) {
 		// iterate over the list and return the index of the first element that
 		// satisfies the BiPredicate
 		// return -1 if no element is found
@@ -119,7 +112,7 @@ public class TextSearcher implements Processor {
 	 *            sensitive or to use startsWith/endWith
 	 * @return index of last match or -1 if no match found
 	 */
-	public int getLastIndex(String s, BiPredicate<String, String> biPred) {
+	private int getLastIndex(String s, BiPredicate<String, String> biPred) {
 		// iterate over list backwards and return index of first element to
 		// satisfy the BiPredicate
 		// return -1 if no element is found
@@ -143,7 +136,7 @@ public class TextSearcher implements Processor {
 	 * @return int array of indices of all occurrences of s in text or null if
 	 *         no occurrences found
 	 */
-	public int[] getAllIndeces(String s, BiPredicate<String, String> biPred) {
+	private int[] getAllIndeces(String s, BiPredicate<String, String> biPred) {
 
 		int count = countOccurences(s, biPred);
 

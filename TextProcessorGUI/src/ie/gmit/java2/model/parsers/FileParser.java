@@ -1,10 +1,14 @@
 package ie.gmit.java2.model.parsers;
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
+/**
+ * Class responsible for setting the BufferedReaders' source to a File. 
+ *  
+ * @author Basti
+ *
+ */
 public class FileParser extends Parser {
 
 	/**
@@ -13,9 +17,9 @@ public class FileParser extends Parser {
 	 * 
 	 * @param source
 	 */			
-	protected FileParser(Path source){
+	protected FileParser(File source){
 		try {
-			reader = Files.newBufferedReader(source, StandardCharsets.UTF_8);
+			reader = new BufferedReader(new InputStreamReader(new FileInputStream(source), StandardCharsets.UTF_8));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

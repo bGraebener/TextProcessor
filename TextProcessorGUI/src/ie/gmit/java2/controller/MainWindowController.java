@@ -12,10 +12,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.FileChooser;
 
-//XXX comment
-//DONE search method
-//DONE delete method
-//DONE Javadocs
 
 /**
  * The controller class for the main view. It handles the button events and

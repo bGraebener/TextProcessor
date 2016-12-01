@@ -52,6 +52,7 @@ public abstract class Parser {
 		// clean up the list of words
 		listOfWords.removeIf((i) -> i.equals(" ") || i.isEmpty());
 
+		//return deep copy of List
 		return new ArrayList<String>(listOfWords);
 	}
 
