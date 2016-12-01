@@ -150,7 +150,7 @@ public class TextAnalyser implements Processor {
 	 *            int
 	 * @return List of words in the specified length
 	 */
-	private List<String> findWordsOfLength(int length) {
-		return text.stream().filter((x) -> x.length() == length).collect(Collectors.toList());
+	public List<String> findWordsOfLength(int length) {
+		return text.stream().filter((x) -> x.length() == length).distinct().collect(Collectors.toList());
 	}
 }

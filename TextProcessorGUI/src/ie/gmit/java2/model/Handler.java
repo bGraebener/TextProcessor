@@ -13,9 +13,7 @@ import ie.gmit.java2.controller.MainWindowController;
 import ie.gmit.java2.controller.TextViewController;
 import ie.gmit.java2.model.parsers.Parser;
 import ie.gmit.java2.model.parsers.Parsers;
-import ie.gmit.java2.model.processing.Processor;
-import ie.gmit.java2.model.processing.TextAnalyser;
-import ie.gmit.java2.model.processing.TextSearcher;
+import ie.gmit.java2.model.processing.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -41,6 +39,8 @@ public class Handler {
 
 	private MainWindowController mwc;
 	private Processor analyser, searcher;
+	
+	private Parser parser;
 
 	public Handler(MainWindowController mwc) {
 		// get an instance of the controller to get access to the checkboxes and
@@ -57,39 +57,29 @@ public class Handler {
 		alert.setHeaderText(null);
 	}
 
+	
+	public void setParser(URL source){
+		parser = Parsers.getParser(source);
+	}
+	
+	public void setParser(File source){
+		parser = Parsers.getParser(source);
+	}
+	
 	/**
 	 * Method that attempts to parse the text from the specified source by
 	 * calling the appropriate method from the Parser class. Gets called by the
-	 * parse event handler of the Controller.
+	 * parse event handler of the MainWindowController.
 	 * 
 	 * @param source
 	 *            the URL of the text source
 	 */
-	public void parse(URL source) {
-
-		Parser urlParser = Parsers.getParser(source);
-		text = urlParser.parse();
-
+	public void parse() {
+		text = parser.parse();
 		alert.setContentText("Text parsed!");
 		alert.show();
 	}
 
-	/**
-	 * Method that attempts to parse the text from the specified source by
-	 * calling the appropriate method from the Parser class. Gets called by the
-	 * parse event handler of the Controller.
-	 * 
-	 * @param source
-	 *            the text source File
-	 */
-	public void parse(File source) {
-
-		Parser fileParser = Parsers.getParser(source);
-		text = fileParser.parse();
-
-		alert.setContentText("Text parsed!");
-		alert.show();
-	}
 
 	/**
 	 * Method that retrieves all data from the user search or delete query by
@@ -125,6 +115,17 @@ public class Handler {
 			return "No text found";
 		}
 	}
+
+	public String findWordsOfLength(int userInput) {
+		
+		if (text == null || text.isEmpty()) {
+			return "No text found";
+		}
+		
+		return new TextAnalyser(text).findWordsOfLength(userInput).toString();
+		
+	}
+
 
 	/**
 	 * Method to delete an element from the text. The user can specify an index

@@ -57,8 +57,8 @@
                <children>
                   <Label text="Search String:" />
                   <Label text="Delete :" GridPane.rowIndex="1" />
-                  <TextField fx:id="searchTextField" promptText="Enter Search String" GridPane.columnIndex="1" />
-                  <TextField fx:id="deleteTextField" promptText="Enter Index or String " GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <TextField fx:id="searchTextField" promptText="Enter String or Number" GridPane.columnIndex="1" />
+                  <TextField fx:id="deleteTextField" promptText="Enter String or Index " GridPane.columnIndex="1" GridPane.rowIndex="1" />
                   <CheckBox fx:id="caseCheckBox" mnemonicParsing="false" text="case sensitive" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.rowIndex="2">
                      <GridPane.margin>
                         <Insets left="5.0" />

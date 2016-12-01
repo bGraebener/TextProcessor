@@ -12,7 +12,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.FileChooser;
 
-
 /**
  * The controller class for the main view. It handles the button events and
  * checks if user input is present. If the required input is missing it prompts
@@ -40,8 +39,8 @@ public class MainWindowController {
 	private Handler handler;
 
 	/**
-	 * Method that gets called before the Window is opened. Used to initialise the Handler class, and attaches
-	 * listeners to the checkboxes.
+	 * Method that gets called before the Window is opened. Used to initialise
+	 * the Handler class, and attaches listeners to the checkboxes.
 	 */
 	@FXML
 	private void initialize() {
@@ -110,17 +109,19 @@ public class MainWindowController {
 			File selectedFile = new File(fileTextField.getText());
 
 			if (selectedFile.exists()) {
-				handler.parse(selectedFile);				
-				
+				handler.setParser(selectedFile);
+				handler.parse();
+
 			} else {
 				alert.setContentText("File does not exist!");
 				alert.show();
 			}
 
 		} else if (!urlTextField.getText().isEmpty()) {
-			
+
 			try {
-				handler.parse(new URL (urlTextField.getText()));
+				handler.setParser(new URL(urlTextField.getText()));
+				handler.parse();
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}
@@ -143,13 +144,29 @@ public class MainWindowController {
 		}
 
 		String userInput = searchTextField.getText();
-		String statsResults = handler.searchForString(userInput);
+		boolean isDigit = false;
 
-		textArea.setText(statsResults);
+		for (char x : userInput.toCharArray()) {
+			if (Character.isDigit(x)) {
+				isDigit = true;
+			} else {
+				isDigit = false;
+			}
+		}
+
+		if (isDigit) {
+			
+			textArea.setText(handler.findWordsOfLength(Integer.parseInt(userInput)));
+		} else {
+
+			String statsResults = handler.searchForString(userInput);
+
+			textArea.setText(statsResults);
+		}
 	}
 
 	/**
-	 * Event handler for the "Show Stats" button. 
+	 * Event handler for the "Show Stats" button.
 	 */
 	@FXML
 	private void showStats() {
@@ -192,17 +209,17 @@ public class MainWindowController {
 	private void showText() {
 		handler.showText();
 	}
-	
+
 	/**
-	 * Event handler for the 'Save Stats' - Button. Delegates to the Handlers' saveStats method()
+	 * Event handler for the 'Save Stats' - Button. Delegates to the Handlers'
+	 * saveStats method()
 	 */
 	@FXML
-	private void saveStats(){
+	private void saveStats() {
 		handler.saveStats();
 	}
 
-	
-	//getters for the checkboxes
+	// getters for the checkboxes
 	public final boolean caseIsSelected() {
 		return caseCheckBox.isSelected();
 	}

@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiPredicate;
 
-
 /**
  * Class to process the text gathered by the Parser. Takes an instance of the
  * parsed text as a List<> in the constructor.
@@ -63,7 +62,6 @@ public class TextSearcher implements Processor {
 		return text.stream().filter((x) -> biPred.test(x, s)).count() > 0;
 	}
 
-
 	/**
 	 * Returns number of occurrences of a String in the text
 	 * 
@@ -81,7 +79,7 @@ public class TextSearcher implements Processor {
 	}
 
 	/**
-	 * Finds the first match in the text.
+	 * Finds the first match in the text that satisfies the BiPredicate.
 	 * 
 	 * @param s
 	 *            String to look for in the text
@@ -103,7 +101,7 @@ public class TextSearcher implements Processor {
 	}
 
 	/**
-	 * Finds last match in the text.
+	 * Finds last match in the text that satisfies the BiPredicate.
 	 * 
 	 * @param s
 	 *            String to look for in the text
@@ -163,6 +161,11 @@ public class TextSearcher implements Processor {
 	 * @return The deleted String or message that nothing was deleted
 	 */
 	public String delete(int index) {
+
+		if (text == null || text.isEmpty()) {
+			return "No text found";
+		}
+
 		if (text.size() > index) {
 			return text.remove(index);
 		}
@@ -180,6 +183,11 @@ public class TextSearcher implements Processor {
 	 * @return Amount of elements deleted
 	 */
 	public int delete(String string, BiPredicate<String, String> biPred) {
+
+		if (text.isEmpty() || text == null) {
+			return -1;
+		}
+
 		int deleted = 0;
 
 		for (int i = 0; i < text.size(); i++) {
